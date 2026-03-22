@@ -98,7 +98,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           
           {/* 简历卡片 */}
-          <div className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-100 hover:border-blue-200">
+         <div className="group bg-blue-50 p-6 rounded-2xl shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-100 hover:border-blue-200">
             <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <FileText className="text-blue-600" size={28} />
             </div>
@@ -116,7 +116,7 @@ export default function Home() {
           </div>
 
           {/* 日常办公卡片 */}
-          <div className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-100 hover:border-indigo-200">
+          <div className="group bg-indigo-50 p-6 rounded-2xl shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-100 hover:border-indigo-200">
             <div className="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <Briefcase className="text-indigo-600" size={28} />
             </div>
@@ -134,7 +134,7 @@ export default function Home() {
           </div>
 
           {/* 合同协议卡片 */}
-          <div className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-100 hover:border-emerald-200">
+          <div className="group bg-emerald-50 p-6 rounded-2xl shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-100 hover:border-emerald-200">
             <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <FileSignature className="text-emerald-600" size={28} />
             </div>
@@ -152,7 +152,7 @@ export default function Home() {
           </div>
 
           {/* 文书代写卡片 */}
-          <div className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-100 hover:border-amber-200">
+          <div className="group bg-amber-50 p-6 rounded-2xl shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-100 hover:border-amber-200">
             <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <PenTool className="text-amber-600" size={28} />
             </div>
