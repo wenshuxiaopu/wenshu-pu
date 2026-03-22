@@ -35,7 +35,27 @@ export default function Home() {
           </div>
         </div>
       </nav>
-
+{/* 搜索框 + 热门标签 */}
+<div className="max-w-3xl mx-auto px-4 py-8">
+  <div className="relative">
+    <input 
+      type="text" 
+      placeholder="你想写什么？试试搜索：简历 情书 合同..." 
+      className="w-full px-5 py-4 text-base border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+    />
+    <button className="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 text-white px-5 py-2 rounded-xl text-sm hover:bg-blue-700 transition">
+      搜索
+    </button>
+  </div>
+  <div className="flex flex-wrap gap-2 mt-4 justify-center">
+    <span className="text-sm text-gray-500">热门：</span>
+    <button className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">简历</button>
+    <button className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">情书</button>
+    <button className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">租房合同</button>
+    <button className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">检讨书</button>
+    <button className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">辞职信</button>
+  </div>
+</div>
       {/* 英雄区（加大加粗） */}
       <section className="max-w-6xl mx-auto px-4 py-24 text-center relative">
         <div className="absolute inset-0 -z-10 overflow-hidden">
