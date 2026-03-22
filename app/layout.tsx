@@ -8,10 +8,12 @@ const defaultUrl = process.env.VERCEL_URL
   : "http://localhost:3000";
 
 export const metadata = {
-  title: '文书小铺 - 让AI帮你写文书',
-  description: '简历优化、情书、租房合同、检讨书，1分钟生成，一杯奶茶钱',
-};
-
+  title: '文书小铺 - 专业文书服务',
+  description: '简历、日常办公、合同协议、文书代写，1分钟生成',
+  icons: {
+    icon: '/favicon.png',
+  },
+}
 const geistSans = Geist({
   variable: "--font-geist-sans",
   display: "swap",
