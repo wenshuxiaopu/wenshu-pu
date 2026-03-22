@@ -61,10 +61,10 @@ export default function Home() {
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-100 rounded-full blur-3xl opacity-30"></div>
         </div>
         
-        <h2 className="text-6xl font-bold text-gray-900 mb-6 leading-tight">
-          专业文书服务<br />
-          <span className="text-blue-600">比通用工具更懂你</span>
-        </h2>
+        <h2 className="text-3xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+  专业文书服务<br />
+  <span className="text-blue-600">比通用工具更懂你</span>
+</h2>
         <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
           简历、工作周报、合同协议、检讨书……<br />
           1分钟生成，不满意重写，服务有保障
