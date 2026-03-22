@@ -17,12 +17,16 @@ export default function Home() {
       {/* 导航栏 */}
       <nav className="bg-white/80 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Sparkles className="text-blue-600" size={24} />
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              文书小铺
-            </h1>
-          </div>
+    <div className="flex items-center gap-2">
+  <img 
+    src="/images/logo.png" 
+    alt="文书小铺" 
+    className="h-14 w-auto"
+  />
+  <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+    文书小铺
+  </span>
+</div>
           <div className="space-x-6 text-gray-600">
             <a href="#features" className="hover:text-blue-600 transition">功能</a>
             <a href="#cases" className="hover:text-blue-600 transition">案例</a>

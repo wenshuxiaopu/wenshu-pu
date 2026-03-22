@@ -7,10 +7,9 @@ const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(defaultUrl),
+export const metadata = {
   title: '文书小铺 - 让AI帮你写文书',
-  description: "简历优化、情书、租房合同、检讨书，1分钟生成，一杯奶茶钱",
+  description: '简历优化、情书、租房合同、检讨书，1分钟生成，一杯奶茶钱',
 };
 
 const geistSans = Geist({
