@@ -1,4 +1,5 @@
 // app/page.tsx
+import FeedbackForm from './components/FeedbackForm'
 import Link from 'next/link'
 import { FileText, Briefcase, FileSignature, PenTool, Sparkles, Users, Star, ArrowRight, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react'
 
@@ -17,22 +18,17 @@ export default function Home() {
       {/* 导航栏 */}
       <nav className="bg-white/80 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <img 
-              src="/images/logo.png" 
-              alt="文书小铺" 
-              className="h-14 w-auto"
-            />
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              文书小铺
-            </span>
-          </div>
-          <div className="space-x-6 text-gray-600">
-            <a href="#features" className="hover:text-blue-600 transition">功能</a>
-            <a href="#feedback" className="hover:text-blue-600 transition">评价</a>
-            <a href="#pricing" className="hover:text-blue-600 transition">价格</a>
-            <a href="/login" className="text-blue-600 font-medium hover:text-blue-700 transition">登录</a>
-          </div>
+         <div className="flex items-center gap-1 md:gap-2">
+  <img src="/images/logo.png" alt="文书小铺" className="h-8 md:h-14 w-auto" />
+  <span className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+    文书小铺
+  </span>
+</div>
+<div className="space-x-2 md:space-x-6 text-gray-600">
+  <a href="#features" className="hover:text-blue-600 transition text-xs md:text-base">功能</a>
+  <a href="#pricing" className="hover:text-blue-600 transition text-xs md:text-base">价格</a>
+  <a href="/login" className="text-blue-600 font-medium text-xs md:text-base">登录</a>
+</div>
         </div>
       </nav>
 
@@ -175,7 +171,6 @@ export default function Home() {
         </div>
       </section>
 
-    
       {/* 价格说明区 */}
       <section id="pricing" className="max-w-6xl mx-auto px-4 py-16 bg-white rounded-2xl shadow-sm my-8">
         <h3 className="text-3xl font-bold text-center mb-4">按次付费，无套路</h3>
@@ -219,99 +214,13 @@ export default function Home() {
           </div>
         </div>
       </section>
-  {/* 客户反馈区（代替案例区） */}
-        {/* 意见反馈表单（演示用，不保存） */}
-        <div className="max-w-2xl mx-auto mt-12 bg-white rounded-2xl p-6 shadow-sm">
-          <h4 className="text-lg font-semibold mb-3">留下您的意见</h4>
-          <textarea
-            id="feedbackInput"
-            rows={3}
-            className="w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="夸夸我们，或者骂骂我们，我们都会认真看..."
-          ></textarea>
-          <button
-            id="submitFeedbackBtn"
-            className="mt-3 bg-blue-600 text-white px-5 py-2 rounded-xl text-sm hover:bg-blue-700 transition"
-          >
-            提交反馈
-          </button>
-          <div id="feedbackDemoMsg" className="mt-4 text-sm text-gray-500"></div>
-        </div>
-
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              document.getElementById('submitFeedbackBtn')?.addEventListener('click', function() {
-                var input = document.getElementById('feedbackInput');
-                var msgDiv = document.getElementById('feedbackDemoMsg');
-                if (input && msgDiv) {
-                  var val = input.value.trim();
-                  if (val === '') {
-                    msgDiv.innerHTML = '<span class="text-red-500">请填写内容再提交</span>';
-                    return;
-                  }
-                  msgDiv.innerHTML = '<span class="text-green-600">✅ 已收到，感谢反馈！</span>';
-                  input.value = '';
-                  setTimeout(function() {
-                    msgDiv.innerHTML = '';
-                  }, 3000);
-                }
-              });
-            `
-          }}
-        />
-      <section id="feedback" className="max-w-6xl mx-auto px-4 py-20 bg-gray-50 rounded-3xl my-8">
-        <div className="text-center mb-12">
-          <h3 className="text-4xl font-bold mb-4">您的反馈是我们前进的动力</h3>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            做得好的请夸夸我们，做得不好的请尽情批评，我们一定改进
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* 正面反馈 */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
-            <div className="flex items-center gap-2 mb-3">
-              <ThumbsUp className="text-green-500" size={20} />
-              <span className="text-sm text-green-600 font-medium">用户好评</span>
-            </div>
-            <p className="text-gray-700 mb-2">“简历改完立马收到面试邀约，HR说我写得超专业！”</p>
-            <p className="text-gray-400 text-sm">—— 应届生 张同学</p>
-          </div>
-          <div className="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
-            <div className="flex items-center gap-2 mb-3">
-              <ThumbsUp className="text-green-500" size={20} />
-              <span className="text-sm text-green-600 font-medium">用户好评</span>
-            </div>
-            <p className="text-gray-700 mb-2">“租房合同细节全，房东都说规范，押金顺利退回。”</p>
-            <p className="text-gray-400 text-sm">—— 租客 王小姐</p>
-          </div>
-
-          {/* 负面反馈 */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-red-500">
-            <div className="flex items-center gap-2 mb-3">
-              <ThumbsDown className="text-red-500" size={20} />
-              <span className="text-sm text-red-600 font-medium">用户建议</span>
-            </div>
-            <p className="text-gray-700 mb-2">“情书模板太大众化，希望能更个性化一点。”</p>
-            <p className="text-gray-400 text-sm">—— 李先生</p>
-          </div>
-          <div className="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-red-500">
-            <div className="flex items-center gap-2 mb-3">
-              <ThumbsDown className="text-red-500" size={20} />
-              <span className="text-sm text-red-600 font-medium">用户建议</span>
-            </div>
-            <p className="text-gray-700 mb-2">“合同模板有些条款不太适合我的情况，希望能自定义更多。”</p>
-            <p className="text-gray-400 text-sm">—— 自由职业者 陈先生</p>
-          </div>
-        </div>
-
-        {/* 鼓励反馈的说明 */}
-        <div className="text-center mt-10 text-gray-500 text-sm">
-          <MessageSquare size={18} className="inline mr-1" />
-          有意见或建议？欢迎随时通过底部微信联系我们，您的每一条反馈我们都会认真对待。
-        </div>
-      </section>
+<FeedbackForm />
+    
+      {/* 反馈引导 */}
+      <div className="max-w-2xl mx-auto text-center py-8 text-gray-500 text-sm">
+        <MessageSquare size={18} className="inline mr-1" />
+        有意见或建议？欢迎随时通过底部微信联系我们，您的每一条反馈我们都会认真对待。
+      </div>
 
       {/* 底部 */}
       <footer className="bg-gray-50 border-t mt-16">
@@ -353,18 +262,18 @@ export default function Home() {
       </footer>
 
       {/* 右下角微信二维码 */}
-      <div className="fixed bottom-6 right-6 z-50 group">
-        <div className="bg-white rounded-xl shadow-lg p-2 cursor-pointer hover:shadow-xl transition">
-          <img 
-            src="/images/wechat-qr.png" 
-            alt="微信咨询" 
-            className="w-48 h-48 object-contain"
-          />
-        </div>
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition bg-gray-800 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
-          扫码咨询
-        </div>
-      </div>
+     <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 group">
+  <div className="bg-white rounded-xl shadow-lg p-1 md:p-2 cursor-pointer hover:shadow-xl transition">
+    <img 
+      src="/images/wechat-qr.png" 
+      alt="微信咨询" 
+      className="w-16 h-16 md:w-48 md:h-48 object-contain"
+    />
+  </div>
+  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition bg-gray-800 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
+    扫码咨询
+  </div>
+</div>
     </main>
   )
 }
