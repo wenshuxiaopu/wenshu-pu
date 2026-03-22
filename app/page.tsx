@@ -347,7 +347,7 @@ export default function Home() {
             </div>
           </div>
           <div className="text-center text-gray-400 text-sm mt-8 pt-8 border-t">
-            © 2025 文书小铺 · 沪ICP备2025123456号
+            © 2025 文书小铺 · 沪ICP备2025071209号
           </div>
         </div>
       </footer>
