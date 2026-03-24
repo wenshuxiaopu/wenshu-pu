@@ -1,5 +1,5 @@
 'use client'
-
+import { User } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -7,7 +7,7 @@ import Link from 'next/link'
 
 export default function FreeTrialPage() {
   const router = useRouter()
-  const [user, setUser] = useState(null)
+ const [user, setUser] = useState<User | null>(null)
   const [downloadCount, setDownloadCount] = useState(0)
   const [loading, setLoading] = useState(true)
 
