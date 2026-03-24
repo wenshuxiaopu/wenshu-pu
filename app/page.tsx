@@ -4,31 +4,26 @@ import Link from 'next/link'
 import { FileText, Briefcase, FileSignature, PenTool, Sparkles, Users, Star, ArrowRight, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react'
 
 export default function Home() {
-  // 价格：原价 -> 现价
-  const prices = {
-    resume: { original: 9.9, current: 3.9 },
-    office: { original: 15.9, current: 6.9 },
-    contract: { original: 15.9, current: 6.9 },
-    writing: { original: 15.9, current: 6.9 }
-  }
-
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white">
       
       {/* 导航栏 */}
       <nav className="bg-white/80 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-         <div className="flex items-center gap-1 md:gap-2">
-  <img src="/images/logo.png" alt="文书小铺" className="h-8 md:h-14 w-auto" />
-  <span className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-    文书小铺
-  </span>
-</div>
-<div className="space-x-2 md:space-x-6 text-gray-600">
-  <a href="#features" className="hover:text-blue-600 transition text-xs md:text-base">功能</a>
-  <a href="#pricing" className="hover:text-blue-600 transition text-xs md:text-base">价格</a>
-  <a href="/login" className="text-blue-600 font-medium text-xs md:text-base">登录</a>
-</div>
+          <div className="flex items-center gap-1 md:gap-2">
+            <img src="/images/logo.png" alt="文书小铺" className="h-8 md:h-14 w-auto" />
+            <span className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+              文书小铺
+            </span>
+          </div>
+          <div className="flex items-center gap-6">
+            <a href="#features" className="text-gray-600 hover:text-blue-600 transition text-xs md:text-base">功能</a>
+            <a href="#pricing" className="text-gray-600 hover:text-blue-600 transition text-xs md:text-base">价格</a>
+            <Link href="/login" className="text-blue-600 font-medium text-xs md:text-base hover:text-blue-700 transition">登录</Link>
+            <Link href="/free-trial" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+              免费试用
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -62,16 +57,16 @@ export default function Home() {
         </div>
         
         <h2 className="text-3xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-  专业文书服务<br />
-  <span className="text-blue-600">比通用工具更懂你</span>
-</h2>
+          专业文书服务<br />
+          <span className="text-blue-600">比通用AI工具更懂你</span>
+        </h2>
         <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
           简历、工作周报、合同协议、检讨书……<br />
           1分钟生成，不满意重写，服务有保障
         </p>
         <div className="flex gap-4 justify-center">
           <Link 
-            href="/resume/new" 
+            href="/free-trial" 
             className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl"
           >
             免费试用 →
@@ -98,21 +93,18 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           
           {/* 简历卡片 */}
-         <div className="group bg-blue-50 p-6 rounded-2xl shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-100 hover:border-blue-200">
+          <div className="group bg-blue-50 p-6 rounded-2xl shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 border border-gray-100 hover:border-blue-200">
             <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <FileText className="text-blue-600" size={28} />
             </div>
             <h4 className="text-xl font-semibold mb-2">简历</h4>
             <p className="text-gray-600 mb-4 text-sm">简历投了没回音？我们帮你突出亮点，让HR一眼看到你</p>
-            <div className="flex justify-between items-center">
-              <div>
-                <span className="text-2xl font-bold text-blue-600">¥{prices.resume.current}</span>
-                <span className="text-gray-400 text-sm line-through ml-2">¥{prices.resume.original}</span>
-              </div>
-              <Link href="/resume/new" className="text-blue-600 hover:underline flex items-center gap-1">
-                开始 <ArrowRight size={16} />
-              </Link>
-            </div>
+            <Link
+              href="/templates"
+              className="inline-flex items-center gap-1 bg-white border border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition"
+            >
+              开始 <ArrowRight size={16} />
+            </Link>
           </div>
 
           {/* 日常办公卡片 */}
@@ -122,15 +114,12 @@ export default function Home() {
             </div>
             <h4 className="text-xl font-semibold mb-2">日常办公</h4>
             <p className="text-gray-600 mb-4 text-sm">周报、月报、述职报告，帮你节省时间，写出专业感</p>
-            <div className="flex justify-between items-center">
-              <div>
-                <span className="text-2xl font-bold text-indigo-600">¥{prices.office.current}</span>
-                <span className="text-gray-400 text-sm line-through ml-2">¥{prices.office.original}</span>
-              </div>
-              <Link href="/office/new" className="text-indigo-600 hover:underline flex items-center gap-1">
-                开始 <ArrowRight size={16} />
-              </Link>
-            </div>
+            <Link
+              href="/coming-soon"
+              className="inline-flex items-center gap-1 bg-white border border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-50 transition"
+            >
+              开始 <ArrowRight size={16} />
+            </Link>
           </div>
 
           {/* 合同协议卡片 */}
@@ -140,15 +129,12 @@ export default function Home() {
             </div>
             <h4 className="text-xl font-semibold mb-2">合同协议</h4>
             <p className="text-gray-600 mb-4 text-sm">租房合同、劳动合同、借条，关键条款帮你把关</p>
-            <div className="flex justify-between items-center">
-              <div>
-                <span className="text-2xl font-bold text-emerald-600">¥{prices.contract.current}</span>
-                <span className="text-gray-400 text-sm line-through ml-2">¥{prices.contract.original}</span>
-              </div>
-              <Link href="/contract/new" className="text-emerald-600 hover:underline flex items-center gap-1">
-                开始 <ArrowRight size={16} />
-              </Link>
-            </div>
+            <Link
+              href="/coming-soon"
+              className="inline-flex items-center gap-1 bg-white border border-emerald-600 text-emerald-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-50 transition"
+            >
+              开始 <ArrowRight size={16} />
+            </Link>
           </div>
 
           {/* 文书代写卡片 */}
@@ -158,15 +144,12 @@ export default function Home() {
             </div>
             <h4 className="text-xl font-semibold mb-2">文书代写</h4>
             <p className="text-gray-600 mb-4 text-sm">情书、检讨书、感谢信，帮你把话说到点子上</p>
-            <div className="flex justify-between items-center">
-              <div>
-                <span className="text-2xl font-bold text-amber-600">¥{prices.writing.current}</span>
-                <span className="text-gray-400 text-sm line-through ml-2">¥{prices.writing.original}</span>
-              </div>
-              <Link href="/writing/new" className="text-amber-600 hover:underline flex items-center gap-1">
-                开始 <ArrowRight size={16} />
-              </Link>
-            </div>
+            <Link
+              href="/coming-soon"
+              className="inline-flex items-center gap-1 bg-white border border-amber-600 text-amber-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-50 transition"
+            >
+              开始 <ArrowRight size={16} />
+            </Link>
           </div>
         </div>
       </section>
@@ -175,46 +158,57 @@ export default function Home() {
       <section id="pricing" className="max-w-6xl mx-auto px-4 py-16 bg-white rounded-2xl shadow-sm my-8">
         <h3 className="text-3xl font-bold text-center mb-4">按次付费，无套路</h3>
         <p className="text-center text-gray-600 mb-8">用一次付一次，不满意随时重写</p>
-        <div className="max-w-2xl mx-auto space-y-4">
-          <div className="flex justify-between items-center py-3 border-b">
-            <span className="text-lg flex items-center gap-2">
-              <FileText size={18} className="text-blue-600" /> 简历
-            </span>
-            <div>
-              <span className="text-xl font-bold text-blue-600">¥{prices.resume.current}</span>
-              <span className="text-gray-400 text-sm line-through ml-2">¥{prices.resume.original}</span>
+        
+        {/* 引流款价格 */}
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 text-center">
+              <p className="text-gray-600 mb-1">📄 简历模板 · 日常办公模板</p>
+              <div className="flex items-center justify-center gap-3">
+                <span className="text-3xl font-bold text-blue-600">¥0.9</span>
+                <span className="text-gray-400 line-through">¥9.9</span>
+                <span className="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">限时特惠</span>
+              </div>
+              <p className="text-gray-500 text-sm mt-2">Word格式，直接编辑，一键下载</p>
+            </div>
+            <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-xl p-6 text-center">
+              <p className="text-gray-600 mb-1">📝 合同协议 · 文书代写模板</p>
+              <div className="flex items-center justify-center gap-3">
+                <span className="text-3xl font-bold text-emerald-600">¥1.9</span>
+                <span className="text-gray-400 line-through">¥15.9</span>
+                <span className="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">限时特惠</span>
+              </div>
+              <p className="text-gray-500 text-sm mt-2">Word格式，直接编辑，一键下载</p>
             </div>
           </div>
-          <div className="flex justify-between items-center py-3 border-b">
-            <span className="text-lg flex items-center gap-2">
-              <Briefcase size={18} className="text-indigo-600" /> 日常办公
-            </span>
-            <div>
-              <span className="text-xl font-bold text-indigo-600">¥{prices.office.current}</span>
-              <span className="text-gray-400 text-sm line-through ml-2">¥{prices.office.original}</span>
+          
+          {/* 利润款提示 */}
+          <div className="border-t border-gray-200 pt-6 mt-4">
+            <p className="text-center text-gray-500 mb-3">✍️ 需要更专业的文书？</p>
+            <div className="flex justify-center gap-4 flex-wrap">
+              <div className="bg-gray-50 rounded-lg px-4 py-2 text-center">
+                <p className="text-sm text-gray-600">简历优化</p>
+                <p className="text-lg font-semibold text-blue-600">¥6.9/次</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg px-4 py-2 text-center">
+                <p className="text-sm text-gray-600">办公文书</p>
+                <p className="text-lg font-semibold text-indigo-600">¥6.9/次</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg px-4 py-2 text-center">
+                <p className="text-sm text-gray-600">合同定制</p>
+                <p className="text-lg font-semibold text-emerald-600">¥6.9/次</p>
+              </div>
+              <div className="bg-gray-50 rounded-lg px-4 py-2 text-center">
+                <p className="text-sm text-gray-600">文书代写</p>
+                <p className="text-lg font-semibold text-amber-600">¥6.9/次</p>
+              </div>
             </div>
-          </div>
-          <div className="flex justify-between items-center py-3 border-b">
-            <span className="text-lg flex items-center gap-2">
-              <FileSignature size={18} className="text-emerald-600" /> 合同协议
-            </span>
-            <div>
-              <span className="text-xl font-bold text-emerald-600">¥{prices.contract.current}</span>
-              <span className="text-gray-400 text-sm line-through ml-2">¥{prices.contract.original}</span>
-            </div>
-          </div>
-          <div className="flex justify-between items-center py-3 border-b">
-            <span className="text-lg flex items-center gap-2">
-              <PenTool size={18} className="text-amber-600" /> 文书代写
-            </span>
-            <div>
-              <span className="text-xl font-bold text-amber-600">¥{prices.writing.current}</span>
-              <span className="text-gray-400 text-sm line-through ml-2">¥{prices.writing.original}</span>
-            </div>
+            <p className="text-center text-gray-400 text-sm mt-4">模板下载后，可付费升级优化服务，不满意免费重写</p>
           </div>
         </div>
       </section>
-<FeedbackForm />
+
+      <FeedbackForm />
     
       {/* 反馈引导 */}
       <div className="max-w-2xl mx-auto text-center py-8 text-gray-500 text-sm">
@@ -228,7 +222,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-sm text-gray-600">
             <div>
               <h5 className="font-bold text-gray-900 mb-3">文书小铺</h5>
-              <p>专业文书服务，比通用工具更懂你</p>
+              <p>专业文书服务，比通用AI工具更懂你</p>
             </div>
             <div>
               <h5 className="font-bold text-gray-900 mb-3">功能</h5>
@@ -262,18 +256,18 @@ export default function Home() {
       </footer>
 
       {/* 右下角微信二维码 */}
-     <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 group">
-  <div className="bg-white rounded-xl shadow-lg p-1 md:p-2 cursor-pointer hover:shadow-xl transition">
-    <img 
-      src="/images/wechat-qr.png" 
-      alt="微信咨询" 
-      className="w-16 h-16 md:w-48 md:h-48 object-contain"
-    />
-  </div>
-  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition bg-gray-800 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
-    扫码咨询
-  </div>
-</div>
+      <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 group">
+        <div className="bg-white rounded-xl shadow-lg p-1 md:p-2 cursor-pointer hover:shadow-xl transition">
+          <img 
+            src="/images/wechat-qr.png" 
+            alt="微信咨询" 
+            className="w-16 h-16 md:w-48 md:h-48 object-contain"
+          />
+        </div>
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition bg-gray-800 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
+          扫码咨询
+        </div>
+      </div>
     </main>
   )
 }
