@@ -1,9 +1,30 @@
-// app/page.tsx
+'use client'
+
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 import FeedbackForm from './components/FeedbackForm'
 import Link from 'next/link'
 import { FileText, Briefcase, FileSignature, PenTool, Sparkles, Users, Star, ArrowRight, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react'
 
 export default function Home() {
+  const [user, setUser] = useState<any>(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    // 获取当前登录用户
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user)
+    })
+
+    // 监听登录状态变化
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white">
       
@@ -19,10 +40,27 @@ export default function Home() {
           <div className="flex items-center gap-6">
             <a href="#features" className="text-gray-600 hover:text-blue-600 transition text-xs md:text-base">功能</a>
             <a href="#pricing" className="text-gray-600 hover:text-blue-600 transition text-xs md:text-base">价格</a>
-            <Link href="/login" className="text-blue-600 font-medium text-xs md:text-base hover:text-blue-700 transition">登录</Link>
-            <Link href="/free-trial" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
-              免费试用
-            </Link>
+            {user ? (
+              <>
+                <span className="text-gray-600 text-xs md:text-base">你好，{user.email?.split('@')[0]}</span>
+                <button
+                  onClick={async () => {
+                    await supabase.auth.signOut()
+                    router.push('/')
+                  }}
+                  className="text-red-600 text-xs md:text-base hover:text-red-700 transition"
+                >
+                  退出
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="text-blue-600 font-medium text-xs md:text-base hover:text-blue-700 transition">登录</Link>
+                <Link href="/free-trial" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+                  免费试用
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -159,7 +197,6 @@ export default function Home() {
         <h3 className="text-3xl font-bold text-center mb-4">按次付费，无套路</h3>
         <p className="text-center text-gray-600 mb-8">用一次付一次，不满意随时重写</p>
         
-        {/* 引流款价格 */}
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6 text-center">
@@ -182,7 +219,6 @@ export default function Home() {
             </div>
           </div>
           
-          {/* 利润款提示 */}
           <div className="border-t border-gray-200 pt-6 mt-4">
             <p className="text-center text-gray-500 mb-3">✍️ 需要更专业的文书？</p>
             <div className="flex justify-center gap-4 flex-wrap">
