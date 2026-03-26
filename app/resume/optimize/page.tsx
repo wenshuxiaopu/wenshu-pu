@@ -76,19 +76,19 @@ export default function ResumeOptimizePage() {
         setResult(data.result)
         
         // 调用预览生成 API
-        const formData = new FormData()
-        formData.append('file', file!)
-        formData.append('aiData', data.result)
-        
-      const previewRes = await fetch('/api/generate-preview', {
+ const previewRes = await fetch('/api/generate-preview', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ content: data.result })
 })
-        const previewData = await previewRes.json()
-        if (previewData.previewUrl) {
-          setPreviewUrl(previewData.previewUrl)
-        }
+
+if (previewRes.ok) {
+  const blob = await previewRes.blob()
+  const url = URL.createObjectURL(blob)
+  setPreviewUrl(url)
+} else {
+  setError('生成预览失败')
+}
       }
     } catch (err) {
       setError('生成失败，请重试')
@@ -198,13 +198,13 @@ export default function ResumeOptimizePage() {
           </button>
         </div>
 
-        {previewUrl && (
-          <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-            <h3 className="text-lg font-semibold mb-4">预览图</h3>
-            <img src={previewUrl} alt="简历预览" className="w-full border rounded-lg" />
-            <p className="text-xs text-gray-400 mt-2 text-center">带水印预览图，支付后可下载原文件</p>
-          </div>
-        )}
+    {previewUrl && (
+  <div className="bg-white rounded-xl shadow-md p-6 mt-6">
+    <h3 className="text-lg font-semibold mb-4">预览图</h3>
+    <img src={previewUrl} alt="简历预览" className="w-full border rounded-lg" />
+    <p className="text-xs text-gray-400 mt-2 text-center">带水印预览图，支付后可下载原文件</p>
+  </div>
+)}
 
         {result && !previewUrl && (
           <div className="bg-white rounded-xl shadow-md p-6">
