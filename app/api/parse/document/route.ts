@@ -22,11 +22,11 @@ export async function POST(req: Request) {
     if (ext === 'docx') {
       const result = await mammoth.extractRawText({ buffer })
       text = result.value
-    } else if (ext === 'xlsx') {
-      const workbook = readFile(buffer)
-      const sheetName = workbook.SheetNames[0]
-      const sheet = workbook.Sheets[sheetName]
-      text = utils.sheet_to_txt(sheet)
+   } else if (ext === 'xlsx') {
+  const workbook = XLSX.read(buffer, { type: 'buffer' })
+  const sheetName = workbook.SheetNames[0]
+  const sheet = workbook.Sheets[sheetName]
+  text = XLSX.utils.sheet_to_txt(sheet)
     } else {
       return NextResponse.json({ error: '不支持的文件格式，请上传 .docx 或 .xlsx' }, { status: 400 })
     }
