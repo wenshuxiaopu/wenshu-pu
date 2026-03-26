@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const { content } = await req.json()
 
-    const lines = content.split('\n').filter((line: string) => line.trim())
+    const lines: string[] = content.split('\n').filter((line: string) => line.trim())
 
     return new ImageResponse(
       (
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
           }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {lines.map((line, i) => {
+            {lines.map((line: string, i: number) => {
               if (line.startsWith('##')) {
                 return (
                   <div
@@ -53,23 +53,23 @@ export async function POST(req: Request) {
               )
             })}
           </div>
-         <div
-  style={{
-    position: 'absolute',
-    bottom: '20px',
-    right: '20px',
-    color: '#ef4444',
-    fontSize: '24px',
-    fontWeight: 'bold',
-    transform: 'rotate(-15deg)',
-    opacity: 0.6,
-    background: 'rgba(255,255,255,0.3)',
-    padding: '8px 16px',
-    borderRadius: '8px',
-  }}
->
-  文书小铺·预览
-</div>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '20px',
+              right: '20px',
+              color: '#ef4444',
+              fontSize: '24px',
+              fontWeight: 'bold',
+              transform: 'rotate(-15deg)',
+              opacity: 0.6,
+              background: 'rgba(255,255,255,0.3)',
+              padding: '8px 16px',
+              borderRadius: '8px',
+            }}
+          >
+            文书小铺·预览
+          </div>
         </div>
       ),
       {
