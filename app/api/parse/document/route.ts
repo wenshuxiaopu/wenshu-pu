@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import mammoth from 'mammoth'
+import * as XLSX from 'xlsx'
 import { readFile, utils } from 'xlsx'
 import { writeFile, unlink } from 'fs/promises'
 import path from 'path'
