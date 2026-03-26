@@ -80,10 +80,11 @@ export default function ResumeOptimizePage() {
         formData.append('file', file!)
         formData.append('aiData', data.result)
         
-        const previewRes = await fetch('/api/fill-and-preview', {
-          method: 'POST',
-          body: formData
-        })
+      const previewRes = await fetch('/api/generate-preview', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ content: data.result })
+})
         const previewData = await previewRes.json()
         if (previewData.previewUrl) {
           setPreviewUrl(previewData.previewUrl)
