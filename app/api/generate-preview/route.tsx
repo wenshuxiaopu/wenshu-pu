@@ -1,84 +1,85 @@
-import { ImageResponse } from '@vercel/og'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   try {
     const { content } = await req.json()
 
-    const lines: string[] = content.split('\n').filter((line: string) => line.trim())
+    const safeContent = content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
 
-    return new ImageResponse(
-      (
-        <div
-          style={{
-            width: '800px',
-            minHeight: '600px',
-            background: 'white',
-            padding: '40px',
-            display: 'flex',
-            flexDirection: 'column',
-            fontFamily: 'system-ui, sans-serif',
-            position: 'relative',
-          }}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {lines.map((line: string, i: number) => {
-              if (line.startsWith('##')) {
-                return (
-                  <div
-                    key={i}
-                    style={{
-                      fontSize: '18px',
-                      fontWeight: 'bold',
-                      color: '#3b82f6',
-                      marginTop: i > 0 ? '16px' : '0',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    {line.replace('##', '').trim()}
-                  </div>
-                )
-              }
-              return (
-                <div
-                  key={i}
-                  style={{
-                    fontSize: '14px',
-                    lineHeight: '1.5',
-                    color: '#333',
-                  }}
-                >
-                  {line}
-                </div>
-              )
-            })}
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '20px',
-              right: '20px',
-              color: '#ef4444',
-              fontSize: '24px',
-              fontWeight: 'bold',
-              transform: 'rotate(-15deg)',
-              opacity: 0.6,
-              background: 'rgba(255,255,255,0.3)',
-              padding: '8px 16px',
-              borderRadius: '8px',
-            }}
-          >
-            文书小铺·预览
-          </div>
-        </div>
-      ),
-      {
-        width: 800,
-        height: 600,
-      }
-    )
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>简历预览</title>
+<style>
+body {
+  font-family: system-ui, sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.resume-card {
+  max-width: 800px;
+  width: 100%;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.watermark-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(45deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 2px, transparent 2px, transparent 8px);
+}
+.watermark-text {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  color: #ef4444;
+  font-size: 24px;
+  font-weight: bold;
+  transform: rotate(-15deg);
+  background: rgba(255,255,255,0.5);
+  padding: 4px 12px;
+  border-radius: 8px;
+  z-index: 2;
+}
+.content {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: #1f2937;
+}
+</style>
+</head>
+<body>
+<div class="resume-card">
+<div class="watermark-overlay"></div>
+<div class="watermark-text">文书小铺·预览</div>
+<div class="content">
+${safeContent.replace(/\n/g, '<br>')}
+</div>
+</div>
+</body>
+</html>`
+
+    return new NextResponse(html, {
+      headers: { 'Content-Type': 'text/html' },
+    })
   } catch (error) {
-    console.error('生成预览图错误:', error)
+    console.error('生成预览失败:', error)
     return NextResponse.json({ error: '生成失败' }, { status: 500 })
   }
 }
