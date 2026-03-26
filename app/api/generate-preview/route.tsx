@@ -5,7 +5,7 @@ export async function POST(req: Request) {
   try {
     const { content } = await req.json()
 
-    const lines = content.split('\n').filter(line => line.trim())
+    const lines = content.split('\n').filter((line: string) => line.trim())
 
     return new ImageResponse(
       (
