@@ -137,12 +137,12 @@ export default function Home() {
             </div>
             <h4 className="text-xl font-semibold mb-2">简历</h4>
             <p className="text-gray-600 mb-4 text-sm">简历投了没回音？我们帮你突出亮点，让HR一眼看到你</p>
-            <Link
-              href="/templates"
-              className="inline-flex items-center gap-1 bg-white border border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition"
-            >
-              开始 <ArrowRight size={16} />
-            </Link>
+           <Link
+  href="/resume"
+  className="inline-flex items-center gap-1 bg-white border border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition"
+>
+  开始 <ArrowRight size={16} />
+</Link>
           </div>
 
           {/* 日常办公卡片 */}

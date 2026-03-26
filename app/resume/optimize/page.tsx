@@ -2,20 +2,51 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Sparkles, Copy, Download } from 'lucide-react'
+import { ArrowLeft, Sparkles, Upload, FileText, FileSpreadsheet } from 'lucide-react'
 
 export default function ResumeOptimizePage() {
-  const [originalResume, setOriginalResume] = useState('')
+  const [file, setFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [extractedText, setExtractedText] = useState('')
   const [targetJob, setTargetJob] = useState('')
   const [style, setStyle] = useState('standard')
-  const [result, setResult] = useState('')
   const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState('')
   const [error, setError] = useState('')
-  const [showPayment, setShowPayment] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState('')
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0]
+    if (!selectedFile) return
+
+    setFile(selectedFile)
+    setUploading(true)
+    setError('')
+
+    const formData = new FormData()
+    formData.append('file', selectedFile)
+
+    try {
+      const res = await fetch('/api/parse/document', {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await res.json()
+      if (data.error) {
+        setError(data.error)
+      } else {
+        setExtractedText(data.text)
+      }
+    } catch (err) {
+      setError('解析失败，请重试')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const handleGenerate = async () => {
-    if (!originalResume.trim()) {
-      setError('请粘贴您的简历内容')
+    if (!extractedText.trim()) {
+      setError('请先上传模板文件')
       return
     }
     if (!targetJob.trim()) {
@@ -25,27 +56,38 @@ export default function ResumeOptimizePage() {
 
     setLoading(true)
     setError('')
-    setShowPayment(false)
+    setResult('')
+    setPreviewUrl('')
 
     try {
-      const response = await fetch('/api/generate/resume', {
+      const res = await fetch('/api/generate/resume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          originalResume,
+          originalResume: extractedText,
           targetJob,
           style,
         }),
       })
-
-      const data = await response.json()
-
+      const data = await res.json()
       if (data.error) {
         setError(data.error)
       } else {
         setResult(data.result)
-        // 显示支付提示（后续接入支付）
-        setShowPayment(true)
+        
+        // 调用预览生成 API
+        const formData = new FormData()
+        formData.append('file', file!)
+        formData.append('aiData', data.result)
+        
+        const previewRes = await fetch('/api/fill-and-preview', {
+          method: 'POST',
+          body: formData
+        })
+        const previewData = await previewRes.json()
+        if (previewData.previewUrl) {
+          setPreviewUrl(previewData.previewUrl)
+        }
       }
     } catch (err) {
       setError('生成失败，请重试')
@@ -54,14 +96,8 @@ export default function ResumeOptimizePage() {
     }
   }
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(result)
-    alert('已复制到剪贴板')
-  }
-
   return (
     <main className="min-h-screen bg-gray-50">
-      {/* 顶部导航 */}
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <Link href="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition">
@@ -74,28 +110,49 @@ export default function ResumeOptimizePage() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">AI简历优化</h1>
-          <p className="text-gray-600">让你的简历在HR眼中脱颖而出</p>
+          <p className="text-gray-600">上传你的简历模板，AI帮你优化后一键下载</p>
           <div className="mt-2 inline-flex items-center gap-1 bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm">
             <Sparkles size={14} />
             <span>限时特惠 ¥6.9/次</span>
           </div>
         </div>
 
-        {/* 表单区 */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              您现有的简历 <span className="text-red-500">*</span>
+          {/* 文件上传区域 */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              上传简历模板 <span className="text-red-500">*</span>
             </label>
-            <textarea
-              rows={8}
-              value={originalResume}
-              onChange={(e) => setOriginalResume(e.target.value)}
-              placeholder="请粘贴您现有的简历内容..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
+              <input
+                type="file"
+                accept=".docx,.xlsx"
+                onChange={handleFileChange}
+                className="hidden"
+                id="file-upload"
+              />
+              <label htmlFor="file-upload" className="cursor-pointer block">
+                <Upload className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                <p className="text-gray-600">点击或拖拽上传文件</p>
+                <p className="text-xs text-gray-400 mt-1">支持 .docx / .xlsx 格式</p>
+              </label>
+            </div>
+            {file && (
+              <div className="mt-3 flex items-center gap-2 text-sm text-gray-600">
+                {file.name.endsWith('.docx') ? <FileText size={16} /> : <FileSpreadsheet size={16} />}
+                <span>{file.name}</span>
+                {uploading && <span className="text-blue-500 ml-2">解析中...</span>}
+              </div>
+            )}
+            {extractedText && (
+              <div className="mt-3 p-3 bg-gray-50 rounded-lg text-sm text-gray-600 max-h-32 overflow-auto">
+                <p className="font-medium mb-1">已提取内容预览：</p>
+                <p className="text-xs">{extractedText.substring(0, 200)}...</p>
+              </div>
+            )}
           </div>
 
+          {/* 目标岗位 */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               目标岗位 <span className="text-red-500">*</span>
@@ -109,6 +166,7 @@ export default function ResumeOptimizePage() {
             />
           </div>
 
+          {/* 风格偏好 */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               风格偏好
@@ -132,49 +190,34 @@ export default function ResumeOptimizePage() {
 
           <button
             onClick={handleGenerate}
-            disabled={loading}
+            disabled={loading || !extractedText}
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition disabled:bg-gray-400"
           >
             {loading ? '生成中...' : '生成优化简历 ¥6.9'}
           </button>
         </div>
 
-        {/* 结果区 */}
-        {result && (
+        {previewUrl && (
+          <div className="bg-white rounded-xl shadow-md p-6 mt-6">
+            <h3 className="text-lg font-semibold mb-4">预览图</h3>
+            <img src={previewUrl} alt="简历预览" className="w-full border rounded-lg" />
+            <p className="text-xs text-gray-400 mt-2 text-center">带水印预览图，支付后可下载原文件</p>
+          </div>
+        )}
+
+        {result && !previewUrl && (
           <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">优化结果</h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={copyToClipboard}
-                  className="flex items-center gap-1 text-gray-500 hover:text-blue-600 transition text-sm"
-                >
-                  <Copy size={16} />
-                  复制
-                </button>
-                <button
-                  className="flex items-center gap-1 text-gray-500 hover:text-blue-600 transition text-sm"
-                >
-                  <Download size={16} />
-                  下载
-                </button>
-              </div>
-            </div>
+            <h3 className="text-lg font-semibold mb-4">优化结果</h3>
             <div className="bg-gray-50 p-4 rounded-lg whitespace-pre-wrap text-sm">
               {result}
             </div>
-
-            {showPayment && (
-              <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
-                <p className="text-gray-700 mb-2">✨ 优化已完成，支付 ¥6.9 即可保存并使用</p>
-                <button
-                  className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition"
-                >
-                  立即支付 ¥6.9
-                </button>
-                <p className="text-xs text-gray-400 mt-2">支付功能即将开放，敬请期待</p>
-              </div>
-            )}
+            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+              <p className="text-gray-700 mb-2">✨ 优化已完成，支付 ¥6.9 即可下载完整文件</p>
+              <button className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700 transition">
+                立即支付 ¥6.9
+              </button>
+              <p className="text-xs text-gray-400 mt-2">支付功能即将开放，敬请期待</p>
+            </div>
           </div>
         )}
       </div>
