@@ -4,15 +4,15 @@ export async function POST(req: Request) {
   try {
     const { docType, userInput } = await req.json()
 
-    let prompt = ''
-    const typeName = {
+    const typeNameMap: Record<string, string> = {
       weekly: '周报',
       plan: '工作计划',
       notice: '通知公告',
       summary: '工作总结',
-    }[docType] || '文案'
+    }
+    const typeName = typeNameMap[docType] || '文案'
 
-    prompt = `你是一位专业的办公文案写作专家。请根据以下需求生成一份${typeName}。
+    const prompt = `你是一位专业的办公文案写作专家。请根据以下需求生成一份${typeName}。
 
 需求描述：
 ${userInput}
