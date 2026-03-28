@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 <html>
 <head>
 <meta charset="UTF-8">
-<title>简历预览</title>
+<title>预览</title>
 <style>
 body {
   font-family: system-ui, sans-serif;
@@ -26,7 +26,7 @@ body {
   justify-content: center;
   align-items: center;
 }
-.resume-card {
+.card {
   max-width: 800px;
   width: 100%;
   background: white;
@@ -65,7 +65,7 @@ body {
 </style>
 </head>
 <body>
-<div class="resume-card">
+<div class="card">
 <div class="watermark-overlay"></div>
 <div class="watermark-text">文书小铺·预览</div>
 <div class="content">

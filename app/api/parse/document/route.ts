@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server'
 import mammoth from 'mammoth'
 import * as XLSX from 'xlsx'
-import { readFile, utils } from 'xlsx'
-import { writeFile, unlink } from 'fs/promises'
-import path from 'path'
 
 export async function POST(req: Request) {
   try {
@@ -20,16 +17,24 @@ export async function POST(req: Request) {
 
     let text = ''
 
-    if (ext === 'docx') {
+    // 处理 .txt
+    if (ext === 'txt') {
+      text = buffer.toString('utf-8')
+    }
+    // 处理 .doc 和 .docx
+    else if (ext === 'doc' || ext === 'docx') {
       const result = await mammoth.extractRawText({ buffer })
       text = result.value
-   } else if (ext === 'xlsx') {
-  const workbook = XLSX.read(buffer, { type: 'buffer' })
-  const sheetName = workbook.SheetNames[0]
-  const sheet = workbook.Sheets[sheetName]
-  text = XLSX.utils.sheet_to_txt(sheet)
-    } else {
-      return NextResponse.json({ error: '不支持的文件格式，请上传 .docx 或 .xlsx' }, { status: 400 })
+    }
+    // 处理 .xls 和 .xlsx
+    else if (ext === 'xls' || ext === 'xlsx') {
+      const workbook = XLSX.read(buffer, { type: 'buffer' })
+      const sheetName = workbook.SheetNames[0]
+      const sheet = workbook.Sheets[sheetName]
+      text = XLSX.utils.sheet_to_txt(sheet)
+    }
+    else {
+      return NextResponse.json({ error: '不支持的文件格式，请上传 .txt/.doc/.docx/.xls/.xlsx' }, { status: 400 })
     }
 
     if (!text.trim()) {

@@ -3,15 +3,18 @@ import path from 'path'
 import { Suspense } from 'react'
 import Link from 'next/link'
 import TemplatesContent from './TemplatesContent'
+import Pagination from '@/app/components/Pagination'
 
 function getTemplates() {
   const templatesDir = path.join(process.cwd(), 'public', 'templates', 'resume')
   const files = fs.readdirSync(templatesDir)
-  const docxFiles = files.filter(file => file.endsWith('.docx') && !file.includes('thumbnails'))
+  const docxFiles = files.filter(file => 
+    (file.endsWith('.doc') || file.endsWith('.docx') || file.endsWith('.xls') || file.endsWith('.xlsx')) && !file.includes('thumbnails')
+  )
   
   return docxFiles.map((file, index) => ({
     id: index + 1,
-    name: file.replace('.docx', ''),
+    name: file.replace(/\.(doc|docx|xls|xlsx)$/, ''),
     fileName: file,
     downloadUrl: `/templates/resume/${file}`,
   }))

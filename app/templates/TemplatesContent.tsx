@@ -1,5 +1,5 @@
 'use client'
-
+import Pagination from '@/app/components/Pagination'
 import Link from 'next/link'
 import ThumbnailImage from '../components/ThumbnailImage'
 import DownloadButton from '../components/DownloadButton'
@@ -102,11 +102,11 @@ export default function TemplatesContent({ templates, searchKeyword, currentPage
       )}
 
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-8">
-          <Link href={buildUrl({ page: String(currentPage - 1) })} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}`}>上一页</Link>
-          <span className="text-sm text-gray-600">第 {currentPage} / {totalPages} 页</span>
-          <Link href={buildUrl({ page: String(currentPage + 1) })} className={`px-4 py-2 rounded-lg text-sm font-medium transition ${currentPage === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'}`}>下一页</Link>
-        </div>
+        <Pagination 
+          currentPage={currentPage} 
+          totalPages={totalPages} 
+          baseUrl="/templates" 
+        />
       )}
 
       <div className="mt-12 text-center text-sm text-gray-500 border-t pt-8">
