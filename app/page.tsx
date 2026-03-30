@@ -168,7 +168,7 @@ export default function Home() {
             <h4 className="text-xl font-semibold mb-2">合同协议</h4>
             <p className="text-gray-600 mb-4 text-sm">租房合同、劳动合同、借条，关键条款帮你把关</p>
             <Link
-              href="/coming-soon"
+              href="/contract"
               className="inline-flex items-center gap-1 bg-white border border-emerald-600 text-emerald-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-50 transition"
             >
               开始 <ArrowRight size={16} />
