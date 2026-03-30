@@ -7,15 +7,12 @@ import Pagination from '@/app/components/Pagination'
 
 function getTemplates() {
   const templatesDir = path.join(process.cwd(), 'public', 'templates', 'office')
-  console.log('模板文件夹路径:', templatesDir)
   const files = fs.readdirSync(templatesDir)
-  console.log('找到的文件数:', files.length)
-  const docxFiles = files.filter(file => 
+  const docFiles = files.filter(file => 
     (file.endsWith('.doc') || file.endsWith('.docx') || file.endsWith('.xls') || file.endsWith('.xlsx')) && !file.includes('thumbnails')
   )
-  console.log('过滤后的文件数:', docxFiles.length)
   
-  return docxFiles.map((file, index) => ({
+  return docFiles.map((file, index) => ({
     id: index + 1,
     name: file.replace(/\.(doc|docx|xls|xlsx)$/, ''),
     fileName: file,
@@ -23,20 +20,35 @@ function getTemplates() {
   }))
 }
 
-// 把需要 await searchParams 的部分抽出来
-async function TemplatesContent({ searchParamsPromise }: { searchParamsPromise: Promise<{ page?: string }> }) {
+async function TemplatesContent({ searchParamsPromise }: { searchParamsPromise: Promise<{ page?: string; search?: string }> }) {
   const params = await searchParamsPromise
   const allTemplates = getTemplates()
   
+  const searchKeyword = params.search?.trim() || ''
+  
+  let filteredTemplates = allTemplates
+  if (searchKeyword) {
+    filteredTemplates = filteredTemplates.filter(t =>
+      t.name.toLowerCase().includes(searchKeyword.toLowerCase())
+    )
+  }
+  
   const itemsPerPage = 15
   const currentPage = params.page ? parseInt(params.page) : 1
-  const totalPages = Math.ceil(allTemplates.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredTemplates.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
-  const currentTemplates = allTemplates.slice(startIndex, endIndex)
+  const currentTemplates = filteredTemplates.slice(startIndex, endIndex)
 
-  const buildUrl = (page: number) => {
-    return `/office/templates?page=${page}`
+  const buildUrl = (newParams: Record<string, string>) => {
+    const urlParams = new URLSearchParams()
+    if (searchKeyword) urlParams.set('search', searchKeyword)
+    Object.entries(newParams).forEach(([key, value]) => {
+      if (value) urlParams.set(key, value)
+      else urlParams.delete(key)
+    })
+    const query = urlParams.toString()
+    return `/office/templates${query ? `?${query}` : ''}`
   }
 
   return (
@@ -49,11 +61,39 @@ async function TemplatesContent({ searchParamsPromise }: { searchParamsPromise: 
           Word/Excel 格式，直接编辑，一键下载
         </p>
         <div className="mt-4 inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-2 rounded-full text-sm">
-          <span className="font-medium">共 {allTemplates.length} 套模板</span>
+          <span className="font-medium">共 {filteredTemplates.length} 套模板</span>
           <span>•</span>
           <span>每页 {itemsPerPage} 个</span>
         </div>
       </div>
+
+      {/* 搜索框 */}
+      <div className="mb-8">
+        <form action={buildUrl({ page: '1' })} method="get" className="flex gap-2 max-w-md mx-auto">
+          <input
+            type="text"
+            name="search"
+            defaultValue={searchKeyword}
+            placeholder="搜索模板名称..."
+            className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+            搜索
+          </button>
+          {searchKeyword && (
+            <Link href="/office/templates" className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+              清空
+            </Link>
+          )}
+        </form>
+      </div>
+
+      {searchKeyword && (
+        <div className="text-center mb-4 text-sm text-gray-500">
+          找到 <span className="font-medium text-indigo-600">{filteredTemplates.length}</span> 个包含“
+          <span className="font-medium">{searchKeyword}</span>”的模板
+        </div>
+      )}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
         {currentTemplates.map((template) => (
@@ -90,13 +130,22 @@ async function TemplatesContent({ searchParamsPromise }: { searchParamsPromise: 
         ))}
       </div>
 
-   {totalPages > 1 && (
-  <Pagination 
-    currentPage={currentPage} 
-    totalPages={totalPages} 
-    baseUrl="/office/templates" 
-  />
-)}
+      {filteredTemplates.length === 0 && (
+        <div className="text-center py-16">
+          <p className="text-gray-500">没有找到相关模板</p>
+          <Link href="/office/templates" className="mt-3 inline-block text-indigo-600 text-sm hover:underline">
+            清空筛选条件
+          </Link>
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <Pagination 
+          currentPage={currentPage} 
+          totalPages={totalPages} 
+          baseUrl="/office/templates" 
+        />
+      )}
 
       <div className="mt-12 text-center text-sm text-gray-500 border-t pt-8">
         <p>所有模板均为 Word/Excel 格式，可直接编辑修改</p>
@@ -109,7 +158,7 @@ async function TemplatesContent({ searchParamsPromise }: { searchParamsPromise: 
 export default async function OfficeTemplatesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; search?: string }>
 }) {
   return (
     <main className="min-h-screen bg-gray-50">
