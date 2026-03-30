@@ -137,7 +137,7 @@ export default function ContractOptimizePage() {
               <label htmlFor="file-upload" className="cursor-pointer block">
                 <Upload className="mx-auto h-12 w-12 text-gray-400 mb-3" />
                 <p className="text-gray-600">点击或拖拽上传文件</p>
-                <p className="text-xs text-gray-400 mt-1">支持 .doc / .docx / .xls / .xlsx / .txt 格式</p>
+             <p className="text-xs text-gray-400 mt-1">支持 .docx / .xlsx / .txt 格式</p>
               </label>
             </div>
             {file && (
