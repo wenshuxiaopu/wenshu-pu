@@ -127,7 +127,7 @@ if (previewRes.ok) {
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition">
               <input
                 type="file"
-                accept=".docx,.xlsx"
+                accept=".docx,.xlsx,.txt"
                 onChange={handleFileChange}
                 className="hidden"
                 id="file-upload"

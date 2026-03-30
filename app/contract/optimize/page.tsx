@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Sparkles, Upload, Download } from 'lucide-react'
 
-export default function OfficeOptimizePage() {
+export default function ContractOptimizePage() {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [extractedText, setExtractedText] = useState('')
@@ -44,7 +44,7 @@ export default function OfficeOptimizePage() {
 
   const handleOptimize = async () => {
     if (!extractedText.trim()) {
-      setError('请先上传文案文件')
+      setError('请先上传合同文件')
       return
     }
 
@@ -54,7 +54,7 @@ export default function OfficeOptimizePage() {
     setPreviewUrl('')
 
     try {
-      const res = await fetch('/api/generate/office-optimize', {
+      const res = await fetch('/api/generate/contract-optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -67,7 +67,6 @@ export default function OfficeOptimizePage() {
       } else {
         setResult(data.result)
         
-        // 调用预览生成 API
         const previewRes = await fetch('/api/generate-preview', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -93,7 +92,7 @@ export default function OfficeOptimizePage() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = '优化后文案.doc'
+    a.download = '优化后合同.doc'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -104,17 +103,17 @@ export default function OfficeOptimizePage() {
     <main className="min-h-screen bg-gray-50">
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4">
-          <Link href="/office" className="inline-flex items-center gap-2 text-gray-600 hover:text-amber-600 transition">
+          <Link href="/contract" className="inline-flex items-center gap-2 text-gray-600 hover:text-amber-600 transition">
             <ArrowLeft size={20} />
-            返回日常办公
+            返回合同协议
           </Link>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">文案优化</h1>
-          <p className="text-gray-600">上传文案，超级AI帮你优化润色，提升专业度</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">合同优化</h1>
+          <p className="text-gray-600">上传合同，超级AI帮你优化条款，提升专业度</p>
           <div className="mt-2 inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-3 py-1 rounded-full text-sm">
             <Sparkles size={14} />
             <span>限时特惠 ¥6.9/次</span>
@@ -125,12 +124,12 @@ export default function OfficeOptimizePage() {
           {/* 文件上传区域 */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              上传文案文件 <span className="text-red-500">*</span>
+              上传合同文件 <span className="text-red-500">*</span>
             </label>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-amber-500 transition">
               <input
                 type="file"
-              accept=".docx,.xlsx,.txt"
+                accept=".docx,.xlsx,.txt"
                 onChange={handleFileChange}
                 className="hidden"
                 id="file-upload"
@@ -138,7 +137,7 @@ export default function OfficeOptimizePage() {
               <label htmlFor="file-upload" className="cursor-pointer block">
                 <Upload className="mx-auto h-12 w-12 text-gray-400 mb-3" />
                 <p className="text-gray-600">点击或拖拽上传文件</p>
-                <p className="text-xs text-gray-400 mt-1">支持 .docx / .xlsx / .txt 格式</p>
+                <p className="text-xs text-gray-400 mt-1">支持 .doc / .docx / .xls / .xlsx / .txt 格式</p>
               </label>
             </div>
             {file && (

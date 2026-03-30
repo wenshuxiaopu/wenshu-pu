@@ -11,6 +11,23 @@ export async function POST(req: Request) {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;')
 
+    // 按行分割
+    const lines = safeContent.split('\n')
+    let formattedContent = ''
+
+    if (lines.length > 0) {
+      // 第一行作为标题
+      formattedContent += `<div class="contract-title">${lines[0]}</div>`
+      // 其余行作为正文
+      for (let i = 1; i < lines.length; i++) {
+        if (lines[i].trim() === '') {
+          formattedContent += `<p>&nbsp;</p>`
+        } else {
+          formattedContent += `<p>${lines[i]}</p>`
+        }
+      }
+    }
+
     const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -18,7 +35,7 @@ export async function POST(req: Request) {
 <title>预览</title>
 <style>
 body {
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, 'Segoe UI', sans-serif;
   background: #f5f5f5;
   margin: 0;
   padding: 40px;
@@ -43,6 +60,7 @@ body {
   width: 100%;
   height: 100%;
   background: repeating-linear-gradient(45deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 2px, transparent 2px, transparent 8px);
+  pointer-events: none;
 }
 .watermark-text {
   position: absolute;
@@ -56,11 +74,25 @@ body {
   padding: 4px 12px;
   border-radius: 8px;
   z-index: 2;
+  pointer-events: none;
 }
 .content {
   white-space: pre-wrap;
   line-height: 1.6;
   color: #1f2937;
+  position: relative;
+  z-index: 1;
+}
+.contract-title {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e7eb;
+}
+p {
+  margin: 0 0 12px 0;
 }
 </style>
 </head>
@@ -69,7 +101,7 @@ body {
 <div class="watermark-overlay"></div>
 <div class="watermark-text">文书小铺·预览</div>
 <div class="content">
-${safeContent.replace(/\n/g, '<br>')}
+${formattedContent}
 </div>
 </div>
 </body>
