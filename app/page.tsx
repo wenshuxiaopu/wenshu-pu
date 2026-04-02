@@ -3,16 +3,12 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import FeedbackForm from './components/FeedbackForm'
 import Link from 'next/link'
-import { FileText, Briefcase, FileSignature, PenTool, Sparkles, Users, Star, ArrowRight, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react'
+import { FileText, Briefcase, FileSignature, PenTool, Sparkles, Users, ArrowRight } from 'lucide-react'
 
 export default function Home() {
   const [user, setUser] = useState<any>(null)
   const router = useRouter()
-  const [searchKeyword, setSearchKeyword] = useState('')
-  const [searchResults, setSearchResults] = useState<any[]>([])
-  const [showResults, setShowResults] = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -24,17 +20,6 @@ export default function Home() {
     return () => subscription.unsubscribe()
   }, [])
 
-  const handleSearch = async () => {
-    if (!searchKeyword.trim()) {
-      setShowResults(false)
-      return
-    }
-    const res = await fetch('/api/search?q=' + encodeURIComponent(searchKeyword))
-    const data = await res.json()
-    setSearchResults(data.results || [])
-    setShowResults(true)
-  }
-
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white">
       
@@ -42,7 +27,6 @@ export default function Home() {
       <nav className="bg-white/80 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-1 md:gap-2">
-            <img src="/images/logo.png" alt="文书小铺" className="h-8 md:h-14 w-auto" />
             <span className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
               文书小铺
             </span>
@@ -75,68 +59,6 @@ export default function Home() {
         </div>
       </nav>
 
-         {/* 搜索框 */}
-      <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="relative">
-          <input 
-            type="text"
-            value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder="搜索模板或服务..." 
-            className="w-full px-5 py-4 text-base border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <button 
-            onClick={handleSearch}
-            className="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 text-white px-5 py-2 rounded-xl text-sm hover:bg-blue-700 transition"
-          >
-            搜索
-          </button>
-        </div>
-        
-        {/* 搜索结果 */}
-        {showResults && (
-          <div className="mt-4 bg-white rounded-xl shadow-lg p-4 max-h-96 overflow-auto">
-            {searchResults.length === 0 ? (
-              <div className="text-center py-4">
-                <p className="text-gray-500 mb-3">未找到相关结果</p>
-                <p className="text-sm text-gray-400">试试浏览我们的服务模块</p>
-                <div className="flex justify-center gap-3 mt-3">
-                  <a href="#features" className="text-blue-600 text-sm hover:underline">查看全部服务 →</a>
-                </div>
-              </div>
-            ) : (
-              (() => {
-                const grouped: Record<string, any[]> = {}
-                searchResults.forEach(item => {
-                  const cat = item.category || (item.type === 'service' ? '服务' : '模板')
-                  if (!grouped[cat]) grouped[cat] = []
-                  grouped[cat].push(item)
-                })
-                return Object.entries(grouped).map(([cat, items]) => (
-                  <div key={cat} className="mb-4">
-                    <div className="font-semibold text-gray-700 mb-2">{cat}</div>
-                    {items.map((item, idx) => (
-                      <Link key={idx} href={item.link} className="block py-2 px-3 hover:bg-gray-100 rounded-lg transition">
-                        {item.name}
-                      </Link>
-                    ))}
-                  </div>
-                ))
-              })()
-            )}
-          </div>
-        )}
-
-        <div className="flex flex-wrap gap-2 mt-4 justify-center">
-          <span className="text-sm text-gray-500">热门：</span>
-          <button onClick={() => { setSearchKeyword('简历'); handleSearch() }} className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">简历</button>
-          <button onClick={() => { setSearchKeyword('周报'); handleSearch() }} className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">周报</button>
-          <button onClick={() => { setSearchKeyword('合同'); handleSearch() }} className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">合同</button>
-          <button onClick={() => { setSearchKeyword('情书'); handleSearch() }} className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">情书</button>
-          <button onClick={() => { setSearchKeyword('检讨书'); handleSearch() }} className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">检讨书</button>
-        </div>
-      </div>
       {/* 英雄区 */}
       <section className="max-w-6xl mx-auto px-4 py-24 text-center relative">
         <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -229,20 +151,19 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* 热门推荐板块 */}
-        <section className="max-w-6xl mx-auto px-4 py-16">
+       {/*<section className="max-w-6xl mx-auto px-4 py-16">
         <h3 className="text-3xl font-bold text-center mb-12">热门推荐</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {[
-           { name: "单页087-1", img: "/templates/resume/thumbnails/单页087-1.jpg", link: "/templates/resume" },
-{ name: "单页092-文艺-1", img: "/templates/resume/thumbnails/单页092-文艺-1.jpg", link: "/templates/resume" },
-{ name: "单页062-表格-1", img: "/templates/resume/thumbnails/单页062-表格-1.jpg", link: "/templates/resume" },
-{ name: "公司年度销售额统计表格", img: "/templates/office/thumbnails/公司年度销售额统计表格.jpg", link: "/office/templates" },
-{ name: "财务收支日记账表", img: "/templates/office/thumbnails/财务收支日记账表.jpg", link: "/office/templates" },
-{ name: "4劳动合同-简洁版", img: "/templates/contract/thumbnails/4劳动合同-简洁版.jpg", link: "/contract/templates" },
-{ name: "京东商城店铺代运营合同书", img: "/templates/contract/thumbnails/京东商城店铺代运营合同书.jpg", link: "/contract/templates" },
-{ name: "10-租赁合同-简版", img: "/templates/contract/thumbnails/10-租赁合同-简版.jpg", link: "/contract/templates" }
+            { name: "单页087-1", img: "/templates/resume/thumbnails/单页087-1.jpg", link: "/templates/resume" },
+            { name: "单页092-文艺-1", img: "/templates/resume/thumbnails/单页092-文艺-1.jpg", link: "/templates/resume" },
+            { name: "单页062-表格-1", img: "/templates/resume/thumbnails/单页062-表格-1.jpg", link: "/templates/resume" },
+            { name: "公司年度销售额统计表格", img: "/templates/office/thumbnails/公司年度销售额统计表格.jpg", link: "/office/templates" },
+            { name: "财务收支日记账表", img: "/templates/office/thumbnails/财务收支日记账表.jpg", link: "/office/templates" },
+            { name: "4劳动合同-简洁版", img: "/templates/contract/thumbnails/4劳动合同-简洁版.jpg", link: "/contract/templates" },
+            { name: "京东商城店铺代运营合同书", img: "/templates/contract/thumbnails/京东商城店铺代运营合同书.jpg", link: "/contract/templates" },
+            { name: "10-租赁合同-简版", img: "/templates/contract/thumbnails/10-租赁合同-简版.jpg", link: "/contract/templates" }
           ].map((item, idx) => (
             <Link key={idx} href={item.link} className="group">
               <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition overflow-hidden">
@@ -257,8 +178,7 @@ export default function Home() {
             </Link>
           ))}
         </div>
-      </section>
-
+      </section>*/}
       {/* 价格说明区 */}
       <section id="pricing" className="max-w-6xl mx-auto px-4 py-16 bg-white rounded-2xl shadow-sm my-8">
         <h3 className="text-3xl font-bold text-center mb-4">按次付费，无套路</h3>
@@ -311,11 +231,8 @@ export default function Home() {
         </div>
       </section>
 
-      <FeedbackForm /> 
-    
       {/* 反馈引导 */}
       <div className="max-w-2xl mx-auto text-center py-8 text-gray-500 text-sm">
-        <MessageSquare size={18} className="inline mr-1" />
         有意见或建议？欢迎随时通过底部微信联系我们，您的每一条反馈我们都会认真对待。
       </div>
 
