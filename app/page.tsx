@@ -235,14 +235,14 @@ export default function Home() {
         <h3 className="text-3xl font-bold text-center mb-12">热门推荐</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { name: "单页087(1)", img: "/templates/resume/thumbnails/单页087(1).jpg", link: "/templates/resume" },
-            { name: "单页092-文艺(1)", img: "/templates/resume/thumbnails/单页092-文艺(1).jpg", link: "/templates/resume" },
-            { name: "单页062-表格(1)", img: "/templates/resume/thumbnails/单页062-表格(1).jpg", link: "/templates/resume" },
-            { name: "公司年度销售额统计表格", img: "/templates/office/thumbnails/公司年度销售额统计表格.jpg", link: "/office/templates" },
-            { name: "财务收支日记账表", img: "/templates/office/thumbnails/财务收支日记账表.jpg", link: "/office/templates" },
-            { name: "4劳动合同（简洁版）", img: "/templates/contract/thumbnails/4劳动合同（简洁版）.jpg", link: "/contract/templates" },
-            { name: "京东商城店铺代运营合同书", img: "/templates/contract/thumbnails/京东商城店铺代运营合同书.jpg", link: "/contract/templates" },
-            { name: "10. 租赁合同（简版）", img: "/templates/contract/thumbnails/10. 租赁合同（简版）.jpg", link: "/contract/templates" }
+           { name: "单页087-1", img: "/templates/resume/thumbnails/单页087-1.jpg", link: "/templates/resume" },
+{ name: "单页092-文艺-1", img: "/templates/resume/thumbnails/单页092-文艺-1.jpg", link: "/templates/resume" },
+{ name: "单页062-表格-1", img: "/templates/resume/thumbnails/单页062-表格-1.jpg", link: "/templates/resume" },
+{ name: "公司年度销售额统计表格", img: "/templates/office/thumbnails/公司年度销售额统计表格.jpg", link: "/office/templates" },
+{ name: "财务收支日记账表", img: "/templates/office/thumbnails/财务收支日记账表.jpg", link: "/office/templates" },
+{ name: "4劳动合同-简洁版", img: "/templates/contract/thumbnails/4劳动合同-简洁版.jpg", link: "/contract/templates" },
+{ name: "京东商城店铺代运营合同书", img: "/templates/contract/thumbnails/京东商城店铺代运营合同书.jpg", link: "/contract/templates" },
+{ name: "10-租赁合同-简版", img: "/templates/contract/thumbnails/10-租赁合同-简版.jpg", link: "/contract/templates" }
           ].map((item, idx) => (
             <Link key={idx} href={item.link} className="group">
               <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition overflow-hidden">
