@@ -10,20 +10,30 @@ import { FileText, Briefcase, FileSignature, PenTool, Sparkles, Users, Star, Arr
 export default function Home() {
   const [user, setUser] = useState<any>(null)
   const router = useRouter()
+  const [searchKeyword, setSearchKeyword] = useState('')
+  const [searchResults, setSearchResults] = useState<any[]>([])
+  const [showResults, setShowResults] = useState(false)
 
   useEffect(() => {
-    // 获取当前登录用户
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user)
     })
-
-    // 监听登录状态变化
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null)
     })
-
     return () => subscription.unsubscribe()
   }, [])
+
+  const handleSearch = async () => {
+    if (!searchKeyword.trim()) {
+      setShowResults(false)
+      return
+    }
+    const res = await fetch('/api/search?q=' + encodeURIComponent(searchKeyword))
+    const data = await res.json()
+    setSearchResults(data.results || [])
+    setShowResults(true)
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white">
@@ -56,7 +66,7 @@ export default function Home() {
             ) : (
               <>
                 <Link href="/login" className="text-blue-600 font-medium text-xs md:text-base hover:text-blue-700 transition">登录</Link>
-                <Link href="/free-trial" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+                <Link href="/templates" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
                   免费试用
                 </Link>
               </>
@@ -65,25 +75,66 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* 搜索框 + 热门标签 */}
+      {/* 搜索框 */}
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="relative">
           <input 
-            type="text" 
-            placeholder="你想写什么？试试搜索：简历 会议纪要 租房合同 检讨书..." 
+            type="text"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            placeholder="搜索模板或服务..." 
             className="w-full px-5 py-4 text-base border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
-          <button className="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 text-white px-5 py-2 rounded-xl text-sm hover:bg-blue-700 transition">
+          <button 
+            onClick={handleSearch}
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 text-white px-5 py-2 rounded-xl text-sm hover:bg-blue-700 transition"
+          >
             搜索
           </button>
         </div>
+        
+        {/* 搜索结果 */}
+        {showResults && (
+          <div className="mt-4 bg-white rounded-xl shadow-lg p-4 max-h-96 overflow-auto">
+          {searchResults.length === 0 ? (
+  <div className="text-center py-4">
+    <p className="text-gray-500 mb-3">未找到相关结果</p>
+    <p className="text-sm text-gray-400">试试浏览我们的服务模块</p>
+    <div className="flex justify-center gap-3 mt-3">
+      <a href="#features" className="text-blue-600 text-sm hover:underline">查看全部服务 →</a>
+    </div>
+  </div>
+) : (
+              (() => {
+                const grouped: Record<string, any[]> = {}
+                searchResults.forEach(item => {
+                  const cat = item.category || (item.type === 'service' ? '服务' : '模板')
+                  if (!grouped[cat]) grouped[cat] = []
+                  grouped[cat].push(item)
+                })
+                return Object.entries(grouped).map(([cat, items]) => (
+                  <div key={cat} className="mb-4">
+                    <div className="font-semibold text-gray-700 mb-2">{cat}</div>
+                    {items.map((item, idx) => (
+                      <Link key={idx} href={item.link} className="block py-2 px-3 hover:bg-gray-100 rounded-lg transition">
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                ))
+              })()
+            )}
+          </div>
+        )}
+
         <div className="flex flex-wrap gap-2 mt-4 justify-center">
           <span className="text-sm text-gray-500">热门：</span>
-          <button className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">简历</button>
-          <button className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">工作周报</button>
-          <button className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">租房合同</button>
-          <button className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">检讨书</button>
-          <button className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">辞职信</button>
+          <button onClick={() => { setSearchKeyword('简历'); handleSearch() }} className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">简历</button>
+          <button onClick={() => { setSearchKeyword('周报'); handleSearch() }} className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">周报</button>
+          <button onClick={() => { setSearchKeyword('合同'); handleSearch() }} className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">合同</button>
+          <button onClick={() => { setSearchKeyword('情书'); handleSearch() }} className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">情书</button>
+          <button onClick={() => { setSearchKeyword('检讨书'); handleSearch() }} className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">检讨书</button>
         </div>
       </div>
 
@@ -104,7 +155,7 @@ export default function Home() {
         </p>
         <div className="flex gap-4 justify-center">
           <Link 
-            href="/free-trial" 
+            href="/templates" 
             className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl"
           >
             免费试用 →
@@ -137,12 +188,9 @@ export default function Home() {
             </div>
             <h4 className="text-xl font-semibold mb-2">简历</h4>
             <p className="text-gray-600 mb-4 text-sm">简历投了没回音？我们帮你突出亮点，让HR一眼看到你</p>
-           <Link
-  href="/resume"
-  className="inline-flex items-center gap-1 bg-white border border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition"
->
-  开始 <ArrowRight size={16} />
-</Link>
+            <Link href="/resume" className="inline-flex items-center gap-1 bg-white border border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition">
+              开始 <ArrowRight size={16} />
+            </Link>
           </div>
 
           {/* 日常办公卡片 */}
@@ -152,12 +200,9 @@ export default function Home() {
             </div>
             <h4 className="text-xl font-semibold mb-2">日常办公</h4>
             <p className="text-gray-600 mb-4 text-sm">周报、月报、述职报告，帮你节省时间，写出专业感</p>
-           <Link
-  href="/office"
-  className="inline-flex items-center gap-1 bg-white border border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-50 transition"
->
-  开始 <ArrowRight size={16} />
-</Link>
+            <Link href="/office" className="inline-flex items-center gap-1 bg-white border border-indigo-600 text-indigo-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-50 transition">
+              开始 <ArrowRight size={16} />
+            </Link>
           </div>
 
           {/* 合同协议卡片 */}
@@ -167,10 +212,7 @@ export default function Home() {
             </div>
             <h4 className="text-xl font-semibold mb-2">合同协议</h4>
             <p className="text-gray-600 mb-4 text-sm">租房合同、劳动合同、借条，关键条款帮你把关</p>
-            <Link
-              href="/contract"
-              className="inline-flex items-center gap-1 bg-white border border-emerald-600 text-emerald-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-50 transition"
-            >
+            <Link href="/contract" className="inline-flex items-center gap-1 bg-white border border-emerald-600 text-emerald-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-50 transition">
               开始 <ArrowRight size={16} />
             </Link>
           </div>
@@ -182,15 +224,41 @@ export default function Home() {
             </div>
             <h4 className="text-xl font-semibold mb-2">文书代写</h4>
             <p className="text-gray-600 mb-4 text-sm">情书、检讨书、感谢信，帮你把话说到点子上</p>
-            <Link
-              href="/coming-soon"
-              className="inline-flex items-center gap-1 bg-white border border-amber-600 text-amber-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-50 transition"
-            >
+            <Link href="/writing" className="inline-flex items-center gap-1 bg-white border border-amber-600 text-amber-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-50 transition">
               开始 <ArrowRight size={16} />
             </Link>
           </div>
         </div>
       </section>
+
+      {/* 热门推荐板块 */}
+     {/* <section className="max-w-6xl mx-auto px-4 py-16">
+        <h3 className="text-3xl font-bold text-center mb-12">热门推荐</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { name: "单页087(1)", img: "/templates/resume/thumbnails/单页087(1).jpg", link: "/templates/resume" },
+            { name: "单页092-文艺(1)", img: "/templates/resume/thumbnails/单页092-文艺(1).jpg", link: "/templates/resume" },
+            { name: "单页062-表格(1)", img: "/templates/resume/thumbnails/单页062-表格(1).jpg", link: "/templates/resume" },
+            { name: "公司年度销售额统计表格", img: "/templates/office/thumbnails/公司年度销售额统计表格.jpg", link: "/office/templates" },
+            { name: "财务收支日记账表", img: "/templates/office/thumbnails/财务收支日记账表.jpg", link: "/office/templates" },
+            { name: "4劳动合同（简洁版）", img: "/templates/contract/thumbnails/4劳动合同（简洁版）.jpg", link: "/contract/templates" },
+            { name: "京东商城店铺代运营合同书", img: "/templates/contract/thumbnails/京东商城店铺代运营合同书.jpg", link: "/contract/templates" },
+            { name: "10. 租赁合同（简版）", img: "/templates/contract/thumbnails/10. 租赁合同（简版）.jpg", link: "/contract/templates" }
+          ].map((item, idx) => (
+            <Link key={idx} href={item.link} className="group">
+              <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition overflow-hidden">
+                <div className="aspect-[3/4] bg-gray-100">
+                  <img src={item.img} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                </div>
+                <div className="p-3 text-center">
+                  <h4 className="font-medium text-sm truncate">{item.name}</h4>
+                  <p className="text-blue-600 text-xs mt-1">查看详情 →</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>*/}
 
       {/* 价格说明区 */}
       <section id="pricing" className="max-w-6xl mx-auto px-4 py-16 bg-white rounded-2xl shadow-sm my-8">
@@ -244,7 +312,7 @@ export default function Home() {
         </div>
       </section>
 
-      <FeedbackForm />
+      <FeedbackForm /> 
     
       {/* 反馈引导 */}
       <div className="max-w-2xl mx-auto text-center py-8 text-gray-500 text-sm">
