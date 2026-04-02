@@ -229,7 +229,22 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+      {/* 热门推荐板块 */}
+      <section className="max-w-6xl mx-auto px-4 py-16">
+        <h3 className="text-3xl font-bold text-center mb-12">热门推荐</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          {[1,2,3,4,5,6,7,8].map((i) => (
+            <div key={i} className="group bg-white rounded-xl shadow-md hover:shadow-lg transition overflow-hidden cursor-pointer" onClick={() => window.open(`/images/hot/hot-${i}.jpg`, '_blank')}>
+              <div className="aspect-[3/4] bg-gray-100">
+                <img src={`/images/hot/hot-${i}.jpg`} alt={`热门推荐${i}`} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+              </div>
+              <div className="p-3 text-center">
+                <p className="text-blue-600 text-sm">点击查看大图 →</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
       {/* 价格说明区 */}
       <section id="pricing" className="max-w-6xl mx-auto px-4 py-16 bg-white rounded-2xl shadow-sm my-8">
         <h3 className="text-3xl font-bold text-center mb-4">按次付费，无套路</h3>
