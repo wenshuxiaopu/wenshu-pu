@@ -75,7 +75,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* 搜索框 */}
+         {/* 搜索框 */}
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="relative">
           <input 
@@ -97,15 +97,15 @@ export default function Home() {
         {/* 搜索结果 */}
         {showResults && (
           <div className="mt-4 bg-white rounded-xl shadow-lg p-4 max-h-96 overflow-auto">
-          {searchResults.length === 0 ? (
-  <div className="text-center py-4">
-    <p className="text-gray-500 mb-3">未找到相关结果</p>
-    <p className="text-sm text-gray-400">试试浏览我们的服务模块</p>
-    <div className="flex justify-center gap-3 mt-3">
-      <a href="#features" className="text-blue-600 text-sm hover:underline">查看全部服务 →</a>
-    </div>
-  </div>
-) : (
+            {searchResults.length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-gray-500 mb-3">未找到相关结果</p>
+                <p className="text-sm text-gray-400">试试浏览我们的服务模块</p>
+                <div className="flex justify-center gap-3 mt-3">
+                  <a href="#features" className="text-blue-600 text-sm hover:underline">查看全部服务 →</a>
+                </div>
+              </div>
+            ) : (
               (() => {
                 const grouped: Record<string, any[]> = {}
                 searchResults.forEach(item => {
@@ -137,7 +137,6 @@ export default function Home() {
           <button onClick={() => { setSearchKeyword('检讨书'); handleSearch() }} className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition">检讨书</button>
         </div>
       </div>
-
       {/* 英雄区 */}
       <section className="max-w-6xl mx-auto px-4 py-24 text-center relative">
         <div className="absolute inset-0 -z-10 overflow-hidden">
