@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import FeedbackForm from './components/FeedbackForm'
 import Link from 'next/link'
-import { FileText, Briefcase, FileSignature, PenTool, Sparkles, Users, ArrowRight } from 'lucide-react'
+import { FileText, Briefcase, FileSignature, PenTool, Sparkles, Users, ArrowRight, MessageSquare } from 'lucide-react'
 
 export default function Home() {
   const [user, setUser] = useState<any>(null)
@@ -35,6 +35,27 @@ export default function Home() {
     setShowResults(true)
   }
 
+  const handleFreeTrial = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      router.push('/login')
+      return
+    }
+    const today = new Date().toISOString().split('T')[0]
+    const { data: record } = await supabase
+      .from('user_daily_downloads')
+      .select('download_count')
+      .eq('user_id', user.id)
+      .eq('download_date', today)
+      .single()
+    const count = record?.download_count || 0
+    if (count >= 3) {
+      alert('今日免费次数已用完，明日再来')
+      return
+    }
+    router.push('/templates')
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-white">
       
@@ -42,6 +63,7 @@ export default function Home() {
       <nav className="bg-white/80 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-1 md:gap-2">
+            <img src="/images/logo.png" alt="文书小铺" className="h-8 md:h-14 w-auto" />
             <span className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
               文书小铺
             </span>
@@ -65,9 +87,12 @@ export default function Home() {
             ) : (
               <>
                 <Link href="/login" className="text-blue-600 font-medium text-xs md:text-base hover:text-blue-700 transition">登录</Link>
-                <Link href="/templates" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+                <button
+                  onClick={handleFreeTrial}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+                >
                   免费试用
-                </Link>
+                </button>
               </>
             )}
           </div>
@@ -153,12 +178,12 @@ export default function Home() {
           1分钟生成，不满意重写，服务有保障
         </p>
         <div className="flex gap-4 justify-center">
-          <Link 
-            href="/templates" 
+          <button 
+            onClick={handleFreeTrial}
             className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-blue-700 transition shadow-lg hover:shadow-xl"
           >
             免费试用 →
-          </Link>
+          </button>
           <a 
             href="#features" 
             className="border-2 border-gray-300 px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-50 transition"
@@ -229,6 +254,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+
       {/* 热门推荐板块 */}
       <section className="max-w-6xl mx-auto px-4 py-16">
         <h3 className="text-3xl font-bold text-center mb-12">热门推荐</h3>
@@ -245,6 +271,7 @@ export default function Home() {
           ))}
         </div>
       </section>
+
       {/* 价格说明区 */}
       <section id="pricing" className="max-w-6xl mx-auto px-4 py-16 bg-white rounded-2xl shadow-sm my-8">
         <h3 className="text-3xl font-bold text-center mb-4">按次付费，无套路</h3>
@@ -301,6 +328,7 @@ export default function Home() {
     
       {/* 反馈引导 */}
       <div className="max-w-2xl mx-auto text-center py-8 text-gray-500 text-sm">
+        <MessageSquare size={18} className="inline mr-1" />
         有意见或建议？欢迎随时通过底部微信联系我们，您的每一条反馈我们都会认真对待。
       </div>
 
