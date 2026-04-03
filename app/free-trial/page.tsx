@@ -1,7 +1,34 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { FileText, Briefcase, FileSignature } from 'lucide-react'
 
 export default function FreeTrialPage() {
+  const router = useRouter()
+  const [downloadCount, setDownloadCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) {
+        router.push('/login')
+        return
+      }
+      const today = new Date().toISOString().split('T')[0]
+      const { data: record } = await supabase
+        .from('user_daily_downloads')
+        .select('download_count')
+        .eq('user_id', data.user.id)
+        .eq('download_date', today)
+        .single()
+      setDownloadCount(record?.download_count || 0)
+      setLoading(false)
+    })
+  }, [])
+
   const categories = [
     {
       name: "简历模板",
@@ -29,6 +56,14 @@ export default function FreeTrialPage() {
     }
   ]
 
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-500">加载中...</div>
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="bg-white border-b sticky top-0 z-10">
@@ -40,13 +75,16 @@ export default function FreeTrialPage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-12">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             免费试用
           </h1>
-          <p className="text-gray-600">
-            每日3次免费下载，体验全部模板
-          </p>
+          <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm">
+            <span>📥 今日剩余免费下载次数：</span>
+            <span className="text-2xl font-bold">{3 - downloadCount}</span>
+            <span>次</span>
+          </div>
+          <p className="text-gray-500 text-sm mt-2">每日3次免费下载，用完即止</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
@@ -62,10 +100,6 @@ export default function FreeTrialPage() {
               </div>
             </Link>
           ))}
-        </div>
-
-        <div className="mt-12 text-center text-sm text-gray-500">
-          <p>每日免费下载3次，用完即止</p>
         </div>
       </div>
     </main>
