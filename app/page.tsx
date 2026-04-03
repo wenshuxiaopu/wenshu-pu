@@ -35,12 +35,14 @@ export default function Home() {
     setShowResults(true)
   }
 
-  const handleFreeTrial = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      router.push('/login')
-      return
-    }
+ const handleFreeTrial = async () => {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    router.push('/login')
+    return
+  }
+  router.push('/free-trial')
+}
     const today = new Date().toISOString().split('T')[0]
     const { data: record } = await supabase
       .from('user_daily_downloads')
