@@ -4,64 +4,40 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
 import OfficeThumbnailImage from '@/app/components/OfficeThumbnailImage'
-import fs from 'fs'
-import path from 'path'
 
-function getTemplates() {
-  const templatesDir = path.join(process.cwd(), 'public', 'templates', 'office')
-  const files = fs.readdirSync(templatesDir)
-  const docFiles = files.filter(file => 
-    (file.endsWith('.doc') || file.endsWith('.docx') || file.endsWith('.xls') || file.endsWith('.xlsx')) && !file.includes('thumbnails')
-  )
-  
-  return docFiles.map((file, index) => ({
-    id: index + 1,
-    name: file.replace(/\.(doc|docx|xls|xlsx)$/, ''),
-    fileName: file,
-    downloadUrl: `/templates/office/${file}`,
-  }))
+interface Template {
+  id: number
+  name: string
+  fileName: string
+  downloadUrl: string
 }
 
-export default function TemplatesContent({ searchParamsPromise }: { searchParamsPromise: Promise<{ page?: string; search?: string }> }) {
-  const [templates, setTemplates] = useState<any[]>([])
+interface TemplatesContentProps {
+  templates: Template[]
+  searchKeyword: string
+  currentPage: number
+}
+
+export default function TemplatesContent({ templates, searchKeyword, currentPage }: TemplatesContentProps) {
   const [remainingCount, setRemainingCount] = useState<number | null>(null)
-  const [searchKeyword, setSearchKeyword] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 15
 
   useEffect(() => {
-    getTemplates()
+    const fetchRemainingCount = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const today = new Date().toISOString().split('T')[0]
+      const { data: record } = await supabase
+        .from('user_daily_downloads')
+        .select('download_count')
+        .eq('user_id', user.id)
+        .eq('download_date', today)
+        .single()
+      const count = record?.download_count || 0
+      setRemainingCount(3 - count)
+    }
     fetchRemainingCount()
   }, [])
-
-  const fetchRemainingCount = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    const today = new Date().toISOString().split('T')[0]
-    const { data: record } = await supabase
-      .from('user_daily_downloads')
-      .select('download_count')
-      .eq('user_id', user.id)
-      .eq('download_date', today)
-      .single()
-    const count = record?.download_count || 0
-    setRemainingCount(3 - count)
-  }
-
-  const handleDownload = async (fileUrl: string) => {
-    const res = await fetch('/api/download', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fileUrl })
-    })
-    const data = await res.json()
-    if (data.error) {
-      alert(data.error)
-    } else {
-      setRemainingCount(prev => prev !== null ? prev - 1 : null)
-      window.location.href = fileUrl
-    }
-  }
 
   let filteredTemplates = templates
   if (searchKeyword) {
@@ -84,6 +60,21 @@ export default function TemplatesContent({ searchParamsPromise }: { searchParams
     })
     const query = urlParams.toString()
     return `/office/templates${query ? `?${query}` : ''}`
+  }
+
+  const handleDownload = async (fileUrl: string) => {
+    const res = await fetch('/api/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileUrl })
+    })
+    const data = await res.json()
+    if (data.error) {
+      alert(data.error)
+    } else {
+      setRemainingCount(prev => prev !== null ? prev - 1 : null)
+      window.location.href = fileUrl
+    }
   }
 
   return (
@@ -119,21 +110,16 @@ export default function TemplatesContent({ searchParamsPromise }: { searchParams
             placeholder="搜索模板名称..."
             className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-            搜索
-          </button>
+          <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">搜索</button>
           {searchKeyword && (
-            <Link href="/office/templates" className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-              清空
-            </Link>
+            <Link href="/office/templates" className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">清空</Link>
           )}
         </form>
       </div>
 
       {searchKeyword && (
         <div className="text-center mb-4 text-sm text-gray-500">
-          找到 <span className="font-medium text-indigo-600">{filteredTemplates.length}</span> 个包含“
-          <span className="font-medium">{searchKeyword}</span>”的模板
+          找到 <span className="font-medium text-indigo-600">{filteredTemplates.length}</span> 个包含“<span className="font-medium">{searchKeyword}</span>”的模板
         </div>
       )}
 
