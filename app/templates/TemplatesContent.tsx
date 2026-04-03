@@ -2,7 +2,6 @@
 import Pagination from '@/app/components/Pagination'
 import Link from 'next/link'
 import ThumbnailImage from '../components/ThumbnailImage'
-import DownloadButton from '../components/DownloadButton'
 
 interface Template {
   id: number
@@ -41,6 +40,21 @@ export default function TemplatesContent({ templates, searchKeyword, currentPage
     })
     const query = urlParams.toString()
     return `/templates${query ? `?${query}` : ''}`
+  }
+
+  const handleDownload = async (fileUrl: string) => {
+    const res = await fetch('/api/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileUrl })
+    })
+    const data = await res.json()
+    if (data.error) {
+      alert(data.error)
+    } else {
+      alert('下载成功')
+      window.location.href = fileUrl
+    }
   }
 
   return (
@@ -86,7 +100,12 @@ export default function TemplatesContent({ templates, searchKeyword, currentPage
             <div className="p-3">
               <h3 className="font-medium text-sm text-gray-800 truncate" title={template.name}>{template.name}</h3>
               <div className="flex justify-between items-center mt-2">
-                <DownloadButton fileUrl={template.downloadUrl} />
+                <button
+                  onClick={() => handleDownload(template.downloadUrl)}
+                  className="text-blue-600 text-xs font-medium hover:text-blue-700"
+                >
+                  立即下载
+                </button>
                 <span className="text-[11px] text-gray-400">Word</span>
               </div>
             </div>
