@@ -1,4 +1,6 @@
 'use client'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase/client'
 import Pagination from '@/app/components/Pagination'
 import Link from 'next/link'
 import ThumbnailImage from '../components/ThumbnailImage'
@@ -17,7 +19,25 @@ interface TemplatesContentProps {
 }
 
 export default function TemplatesContent({ templates, searchKeyword, currentPage }: TemplatesContentProps) {
+  const [remainingCount, setRemainingCount] = useState<number | null>(null)
   const itemsPerPage = 15
+
+  useEffect(() => {
+    const fetchRemainingCount = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const today = new Date().toISOString().split('T')[0]
+      const { data: record } = await supabase
+        .from('user_daily_downloads')
+        .select('download_count')
+        .eq('user_id', user.id)
+        .eq('download_date', today)
+        .single()
+      const count = record?.download_count || 0
+      setRemainingCount(3 - count)
+    }
+    fetchRemainingCount()
+  }, [])
 
   let filteredTemplates = templates
   if (searchKeyword) {
@@ -52,13 +72,23 @@ export default function TemplatesContent({ templates, searchKeyword, currentPage
     if (data.error) {
       alert(data.error)
     } else {
-      alert('下载成功')
+      // 更新剩余次数
+      setRemainingCount(prev => prev !== null ? prev - 1 : null)
       window.location.href = fileUrl
     }
   }
 
   return (
     <>
+      {/* 剩余次数提示 */}
+      {remainingCount !== null && (
+        <div className="mb-4 text-center">
+          <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm ${remainingCount > 0 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+            📥 今日剩余免费下载次数：{remainingCount}
+          </span>
+        </div>
+      )}
+
       <div className="text-center mb-10">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">简历模板下载</h1>
         <p className="text-gray-600">Word 格式，直接编辑，一键下载</p>
