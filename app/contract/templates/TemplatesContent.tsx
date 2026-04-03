@@ -1,5 +1,5 @@
 'use client'
-
+import ContractThumbnailImage from '@/app/components/ContractThumbnailImage'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
@@ -126,7 +126,7 @@ export default function TemplatesContent({ templates, searchKeyword, currentPage
         {currentTemplates.map((template) => (
           <div key={template.id} className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-100 hover:border-emerald-200">
             <div className="aspect-[3/4] bg-gray-50 flex items-center justify-center p-4 group-hover:bg-emerald-50 transition overflow-hidden relative">
-              <div className="text-gray-400 text-sm">合同模板</div>
+              <ContractThumbnailImage src={`/templates/contract/thumbnails/${encodeURIComponent(template.name)}.jpg`} alt={template.name} />
             </div>
             <div className="p-3">
               <h3 className="font-medium text-sm text-gray-800 truncate" title={template.name}>{template.name}</h3>
