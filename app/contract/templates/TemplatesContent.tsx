@@ -152,10 +152,15 @@ export default function TemplatesContent({ templates, searchKeyword, currentPage
         </div>
       )}
 
-     {totalPages > 1 && (
+   {totalPages > 1 && (
   <div className="flex flex-col items-center gap-4 mt-8">
     <div className="flex justify-center items-center gap-4">
-      <Link href="/" className="px-4 py-2 bg-gray-500 text-white rounded-lg text-sm hover:bg-gray-600">回首页</Link>
+      <button
+        onClick={() => window.location.href = buildUrl({ page: '1' })}
+        className="px-4 py-2 bg-gray-500 text-white rounded-lg text-sm hover:bg-gray-600"
+      >
+        回首页
+      </button>
       {currentPage > 1 && (
         <Link href={buildUrl({ page: String(currentPage - 1) })} className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50">上一页</Link>
       )}
@@ -170,18 +175,22 @@ export default function TemplatesContent({ templates, searchKeyword, currentPage
         type="number"
         min="1"
         max={totalPages}
-        defaultValue={currentPage}
-        onKeyPress={(e) => {
-          if (e.key === 'Enter') {
-            const page = parseInt((e.target as HTMLInputElement).value)
-            if (page >= 1 && page <= totalPages) {
-              window.location.href = buildUrl({ page: String(page) })
-            }
-          }
-        }}
+        id="pageInput"
         className="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm"
       />
       <span className="text-sm text-gray-600">页</span>
+      <button
+        onClick={() => {
+          const input = document.getElementById('pageInput') as HTMLInputElement
+          const page = parseInt(input.value)
+          if (page >= 1 && page <= totalPages) {
+            window.location.href = buildUrl({ page: String(page) })
+          }
+        }}
+        className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+      >
+        跳转
+      </button>
     </div>
   </div>
 )}
