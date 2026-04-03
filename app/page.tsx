@@ -35,27 +35,13 @@ export default function Home() {
     setShowResults(true)
   }
 
- const handleFreeTrial = async () => {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    router.push('/login')
-    return
-  }
-  router.push('/free-trial')
-}
-    const today = new Date().toISOString().split('T')[0]
-    const { data: record } = await supabase
-      .from('user_daily_downloads')
-      .select('download_count')
-      .eq('user_id', user.id)
-      .eq('download_date', today)
-      .single()
-    const count = record?.download_count || 0
-    if (count >= 3) {
-      alert('今日免费次数已用完，明日再来')
+  const handleFreeTrial = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      router.push('/login')
       return
     }
-    router.push('/templates')
+    router.push('/free-trial')
   }
 
   return (
