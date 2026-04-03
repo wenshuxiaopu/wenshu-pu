@@ -152,17 +152,39 @@ export default function TemplatesContent({ templates, searchKeyword, currentPage
         </div>
       )}
 
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-8">
-          {currentPage > 1 && (
-            <Link href={buildUrl({ page: String(currentPage - 1) })} className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50">上一页</Link>
-          )}
-          <span className="text-sm text-gray-600">第 {currentPage} / {totalPages} 页</span>
-          {currentPage < totalPages && (
-            <Link href={buildUrl({ page: String(currentPage + 1) })} className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50">下一页</Link>
-          )}
-        </div>
+     {totalPages > 1 && (
+  <div className="flex flex-col items-center gap-4 mt-8">
+    <div className="flex justify-center items-center gap-4">
+      <Link href="/" className="px-4 py-2 bg-gray-500 text-white rounded-lg text-sm hover:bg-gray-600">回首页</Link>
+      {currentPage > 1 && (
+        <Link href={buildUrl({ page: String(currentPage - 1) })} className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50">上一页</Link>
       )}
+      <span className="text-sm text-gray-600">第 {currentPage} / {totalPages} 页</span>
+      {currentPage < totalPages && (
+        <Link href={buildUrl({ page: String(currentPage + 1) })} className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50">下一页</Link>
+      )}
+    </div>
+    <div className="flex justify-center items-center gap-2">
+      <span className="text-sm text-gray-600">跳转到第</span>
+      <input
+        type="number"
+        min="1"
+        max={totalPages}
+        defaultValue={currentPage}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            const page = parseInt((e.target as HTMLInputElement).value)
+            if (page >= 1 && page <= totalPages) {
+              window.location.href = buildUrl({ page: String(page) })
+            }
+          }
+        }}
+        className="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm"
+      />
+      <span className="text-sm text-gray-600">页</span>
+    </div>
+  </div>
+)}
 
       <div className="mt-12 text-center text-sm text-gray-500 border-t pt-8">
         <p>所有模板均为 Word 格式，可直接编辑修改</p>
