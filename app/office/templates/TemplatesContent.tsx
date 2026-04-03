@@ -4,40 +4,64 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import Link from 'next/link'
 import OfficeThumbnailImage from '@/app/components/OfficeThumbnailImage'
+import fs from 'fs'
+import path from 'path'
 
-interface Template {
-  id: number
-  name: string
-  fileName: string
-  downloadUrl: string
+function getTemplates() {
+  const templatesDir = path.join(process.cwd(), 'public', 'templates', 'office')
+  const files = fs.readdirSync(templatesDir)
+  const docFiles = files.filter(file => 
+    (file.endsWith('.doc') || file.endsWith('.docx') || file.endsWith('.xls') || file.endsWith('.xlsx')) && !file.includes('thumbnails')
+  )
+  
+  return docFiles.map((file, index) => ({
+    id: index + 1,
+    name: file.replace(/\.(doc|docx|xls|xlsx)$/, ''),
+    fileName: file,
+    downloadUrl: `/templates/office/${file}`,
+  }))
 }
 
-interface TemplatesContentProps {
-  templates: Template[]
-  searchKeyword: string
-  currentPage: number
-}
-
-export default function TemplatesContent({ templates, searchKeyword, currentPage }: TemplatesContentProps) {
+export default function TemplatesContent({ searchParamsPromise }: { searchParamsPromise: Promise<{ page?: string; search?: string }> }) {
+  const [templates, setTemplates] = useState<any[]>([])
   const [remainingCount, setRemainingCount] = useState<number | null>(null)
+  const [searchKeyword, setSearchKeyword] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 15
 
   useEffect(() => {
-    const fetchRemainingCount = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-      const today = new Date().toISOString().split('T')[0]
-      const { data: record } = await supabase
-        .from('user_daily_downloads')
-        .select('download_count')
-        .eq('user_id', user.id)
-        .eq('download_date', today)
-        .single()
-      const count = record?.download_count || 0
-      setRemainingCount(3 - count)
-    }
+    getTemplates()
     fetchRemainingCount()
   }, [])
+
+  const fetchRemainingCount = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const today = new Date().toISOString().split('T')[0]
+    const { data: record } = await supabase
+      .from('user_daily_downloads')
+      .select('download_count')
+      .eq('user_id', user.id)
+      .eq('download_date', today)
+      .single()
+    const count = record?.download_count || 0
+    setRemainingCount(3 - count)
+  }
+
+  const handleDownload = async (fileUrl: string) => {
+    const res = await fetch('/api/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileUrl })
+    })
+    const data = await res.json()
+    if (data.error) {
+      alert(data.error)
+    } else {
+      setRemainingCount(prev => prev !== null ? prev - 1 : null)
+      window.location.href = fileUrl
+    }
+  }
 
   let filteredTemplates = templates
   if (searchKeyword) {
@@ -62,24 +86,8 @@ export default function TemplatesContent({ templates, searchKeyword, currentPage
     return `/office/templates${query ? `?${query}` : ''}`
   }
 
-  const handleDownload = async (fileUrl: string) => {
-    const res = await fetch('/api/download', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fileUrl })
-    })
-    const data = await res.json()
-    if (data.error) {
-      alert(data.error)
-    } else {
-      setRemainingCount(prev => prev !== null ? prev - 1 : null)
-      window.location.href = fileUrl
-    }
-  }
-
   return (
     <>
-      {/* 剩余次数提示 */}
       {remainingCount !== null && (
         <div className="mb-4 text-center">
           <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm ${remainingCount > 0 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
@@ -131,25 +139,14 @@ export default function TemplatesContent({ templates, searchKeyword, currentPage
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
         {currentTemplates.map((template) => (
-          <div
-            key={template.id}
-            className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-100 hover:border-indigo-200"
-          >
+          <div key={template.id} className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-100 hover:border-indigo-200">
             <div className="aspect-[3/4] bg-gray-50 flex items-center justify-center p-4 group-hover:bg-indigo-50 transition overflow-hidden relative">
-              <OfficeThumbnailImage
-                src={`/templates/office/thumbnails/${encodeURIComponent(template.name)}.jpg`}
-                alt={template.name}
-              />
+              <OfficeThumbnailImage src={`/templates/office/thumbnails/${encodeURIComponent(template.name)}.jpg`} alt={template.name} />
             </div>
             <div className="p-3">
-              <h3 className="font-medium text-sm text-gray-800 truncate" title={template.name}>
-                {template.name}
-              </h3>
+              <h3 className="font-medium text-sm text-gray-800 truncate" title={template.name}>{template.name}</h3>
               <div className="flex justify-between items-center mt-2">
-                <button
-                  onClick={() => handleDownload(template.downloadUrl)}
-                  className="text-indigo-600 text-xs font-medium hover:text-indigo-700"
-                >
+                <button onClick={() => handleDownload(template.downloadUrl)} className="text-indigo-600 text-xs font-medium hover:text-indigo-700">
                   立即下载
                 </button>
                 <span className="text-[11px] text-gray-400">
@@ -166,32 +163,18 @@ export default function TemplatesContent({ templates, searchKeyword, currentPage
       {filteredTemplates.length === 0 && (
         <div className="text-center py-16">
           <p className="text-gray-500">没有找到相关模板</p>
-          <Link href="/office/templates" className="mt-3 inline-block text-indigo-600 text-sm hover:underline">
-            清空筛选条件
-          </Link>
+          <Link href="/office/templates" className="mt-3 inline-block text-indigo-600 text-sm hover:underline">清空筛选条件</Link>
         </div>
       )}
 
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-8">
           {currentPage > 1 && (
-            <Link
-              href={buildUrl({ page: String(currentPage - 1) })}
-              className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
-            >
-              上一页
-            </Link>
+            <Link href={buildUrl({ page: String(currentPage - 1) })} className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50">上一页</Link>
           )}
-          <span className="text-sm text-gray-600">
-            第 {currentPage} / {totalPages} 页
-          </span>
+          <span className="text-sm text-gray-600">第 {currentPage} / {totalPages} 页</span>
           {currentPage < totalPages && (
-            <Link
-              href={buildUrl({ page: String(currentPage + 1) })}
-              className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
-            >
-              下一页
-            </Link>
+            <Link href={buildUrl({ page: String(currentPage + 1) })} className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50">下一页</Link>
           )}
         </div>
       )}
