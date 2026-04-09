@@ -354,7 +354,7 @@ export default function Home() {
             </div>
           </div>
           <div className="text-center text-gray-400 text-sm mt-8 pt-8 border-t">
-            © 2025 文书小铺 · 沪ICP备2025071209号
+          © 2025 文书小铺 · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">沪ICP备2026012538号</a>
           </div>
         </div>
       </footer>
